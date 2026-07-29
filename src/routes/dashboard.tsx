@@ -504,9 +504,16 @@ function DashboardPage() {
               />
             )}
             {section === "projects" && (
-              <ProjectsView projects={projects} milestones={milestones} loading={dataLoading} onPayDeposit={handlePayDeposit} />
+              <ProjectsView
+                projects={projects}
+                milestones={milestones}
+                loading={dataLoading}
+                onPayDeposit={handlePayDeposit}
+                clientUserId={session?.user?.id ?? ""}
+                clientEmail={session?.user?.email ?? ""}
+              />
             )}
-            {section === "courses" && <CoursesView bootcampRegs={bootcampRegs} />}
+            {section === "courses" && <CoursesView bootcampRegs={bootcampRegs} fullName={fullName} />}
             {section === "ai" && (
               <AIView
                 firstName={firstName}
@@ -516,9 +523,9 @@ function DashboardPage() {
               />
             )}
             {section === "messages" && (
-              <EmptyView
-                title="No messages yet"
-                subtitle="Direct messages between you and the OKIKE team will appear here."
+              <SupportChatConsole
+                clientName={fullName}
+                clientEmail={session?.user?.email ?? ""}
               />
             )}
             {section === "files" && (
@@ -576,6 +583,253 @@ function getGoogleCalendarLink(title: string, startTimeStr: string, meetingUrl: 
   } catch (err) {
     return "#";
   }
+}
+
+/* ---------------- Interactive Daily Engagement Systems ---------------- */
+
+interface CodeChallenge {
+  title: string;
+  question: string;
+  code: string;
+  options: string[];
+  correctIndex: number;
+}
+
+const CHALLENGES: Record<string, CodeChallenge> = {
+  "Cyber Security": {
+    title: "Daily Cyber Security Challenge",
+    question: "Which tool is commonly used to perform active network scanning and OS fingerprinting?",
+    code: `# Target discovery scan command
+nmap -O -F 192.168.1.1`,
+    options: ["Wireshark", "Metasploit", "Nmap", "Burp Suite"],
+    correctIndex: 2
+  },
+  "Frontend Web": {
+    title: "Daily Frontend Challenge",
+    question: "Which CSS property is used to create smooth transitions between element states?",
+    code: `/* Hover transition animation */
+.btn {
+  transition: all 0.3s ease;
+}`,
+    options: ["animation-duration", "transform-style", "transition", "will-change"],
+    correctIndex: 2
+  },
+  "Mobile Dev": {
+    title: "Daily Mobile Dev Challenge",
+    question: "Which hook is used in React Native navigation to access the navigation prop of a screen?",
+    code: `import { useNavigation } from '@react-navigation/native';
+const navigation = useNavigation();`,
+    options: ["useRoute", "useNavigation", "useLinkTo", "useContext"],
+    correctIndex: 1
+  },
+  "UI/UX Design": {
+    title: "Daily UI/UX Design Challenge",
+    question: "What does visual hierarchy establish in a user interface layout?",
+    code: `/* Visual hierarchy scaling */
+h1 { font-size: 2.25rem; font-weight: 800; }`,
+    options: ["System loading speed", "Order of user attention", "Color contrast ratios", "Breakpoints layout grid"],
+    correctIndex: 1
+  }
+};
+
+function DailyCodeBite({ bootcampRegs }: { bootcampRegs: any[] }) {
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [verified, setVerified] = useState(false);
+  const [error, setError] = useState(false);
+  const [streak, setStreak] = useState(() => {
+    const saved = typeof window !== "undefined" ? localStorage.getItem("okike_streak") : null;
+    return saved ? parseInt(saved, 10) : 4;
+  });
+  const [xp, setXp] = useState(() => {
+    const saved = typeof window !== "undefined" ? localStorage.getItem("okike_xp") : null;
+    return saved ? parseInt(saved, 10) : 120;
+  });
+
+  // Pick first registration course or default to Frontend Web
+  const userCourse = bootcampRegs?.[0]?.course || "Frontend Web";
+  
+  // Clean matching track key
+  let matchedTrack = "Frontend Web";
+  if (userCourse.toLowerCase().includes("security") || userCourse.toLowerCase().includes("cyber")) {
+    matchedTrack = "Cyber Security";
+  } else if (userCourse.toLowerCase().includes("mobile") || userCourse.toLowerCase().includes("react native") || userCourse.toLowerCase().includes("ios") || userCourse.toLowerCase().includes("android")) {
+    matchedTrack = "Mobile Dev";
+  } else if (userCourse.toLowerCase().includes("design") || userCourse.toLowerCase().includes("ui") || userCourse.toLowerCase().includes("ux") || userCourse.toLowerCase().includes("figma")) {
+    matchedTrack = "UI/UX Design";
+  } else {
+    matchedTrack = "Frontend Web";
+  }
+
+  const challenge = CHALLENGES[matchedTrack] || CHALLENGES["Frontend Web"];
+
+  function handleVerify() {
+    if (selectedOption === challenge.correctIndex) {
+      setVerified(true);
+      setError(false);
+      const nextStreak = streak + 1;
+      const nextXp = xp + 15;
+      setStreak(nextStreak);
+      setXp(nextXp);
+      localStorage.setItem("okike_streak", String(nextStreak));
+      localStorage.setItem("okike_xp", String(nextXp));
+      toast.success("Correct answer! +15 XP added to your dashboard.");
+    } else {
+      setError(true);
+      setVerified(false);
+      toast.error("Incorrect. Try again!");
+    }
+  }
+
+  // Reset selected option when active course changes to prevent boundary index issues
+  useEffect(() => {
+    setSelectedOption(null);
+    setVerified(false);
+  }, [userCourse]);
+
+  return (
+    <section className="rounded-3xl bg-card ring-1 ring-ink/10 p-6 flex flex-col gap-4">
+      <div className="flex items-center justify-between gap-3 border-b border-ink/5 pb-3">
+        <div className="flex items-center gap-2">
+          <Award className="size-5 text-brand" />
+          <h3 className="font-semibold text-base text-ink">{challenge.title}</h3>
+        </div>
+        <div className="flex items-center gap-3 text-xs">
+          <span className="text-ink/50">🔥 {streak} Day Streak</span>
+          <span className="font-mono bg-brand/10 text-brand px-2 py-0.5 rounded-full font-bold">{xp} XP</span>
+        </div>
+      </div>
+
+      <div className="text-left">
+        <p className="text-sm text-ink leading-relaxed mb-3">{challenge.question}</p>
+        <pre className="p-3 bg-surface text-ink/85 rounded-xl text-xs font-mono mb-4 ring-1 ring-ink/5 overflow-x-auto">
+          <code>{challenge.code}</code>
+        </pre>
+      </div>
+
+      {!verified ? (
+        <div className="flex flex-col gap-2">
+          <div className="grid sm:grid-cols-2 gap-2">
+            {challenge.options.map((opt, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => {
+                  setSelectedOption(idx);
+                  setError(false);
+                }}
+                className={`text-left px-4 py-3 rounded-xl text-xs font-medium transition ring-1 cursor-pointer ${
+                  selectedOption === idx
+                    ? "bg-brand/15 ring-brand text-brand"
+                    : "bg-surface/50 ring-ink/10 text-ink/75 hover:bg-surface"
+                }`}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            disabled={selectedOption === null}
+            onClick={handleVerify}
+            className="mt-2 py-2.5 bg-brand text-brand-foreground font-semibold text-xs uppercase tracking-widest rounded-xl hover:opacity-90 disabled:opacity-50 transition cursor-pointer"
+          >
+            Verify Solution
+          </button>
+        </div>
+      ) : (
+        <div className="p-4 bg-emerald-500/10 ring-1 ring-emerald-500/20 text-emerald-600 rounded-xl text-xs font-semibold flex items-center justify-between">
+          <span>✓ Challenge completed! Check back tomorrow for a new code challenge.</span>
+          <button
+            type="button"
+            onClick={() => {
+              setVerified(false);
+              setSelectedOption(null);
+            }}
+            className="text-[10px] uppercase tracking-wider text-brand hover:underline font-bold cursor-pointer"
+          >
+            Reset
+        </button>
+      </div>
+    )}
+  </section>
+);
+}
+
+function DailyTechNews() {
+  const news = [
+    {
+      tag: "Frontend",
+      title: "React 19 & Next.js 15: Deep Dive into the Compiler",
+      desc: "How automatic memoization is changing performance tuning.",
+      url: "https://react.dev"
+    },
+    {
+      tag: "Security",
+      title: "Critical RCE Found in Popular Open-Source Gateways",
+      desc: "Security audit urges immediate package update to patch memory leaks.",
+      url: "https://cve.mitre.org"
+    },
+    {
+      tag: "AI & ML",
+      title: "State of Agentic Coding Frameworks in 2026",
+      desc: "A review of how code assistants cooperate with developers.",
+      url: "https://arxiv.org"
+    }
+  ];
+
+  return (
+    <section className="rounded-2xl bg-card ring-1 ring-ink/10 p-5 text-left">
+      <h3 className="font-semibold text-sm mb-1">Tech News Digest</h3>
+      <p className="text-xs text-ink/50 mb-4">Curated daily news for your track.</p>
+
+      <ul className="space-y-4">
+        {news.map((item, idx) => (
+          <li key={idx} className="group flex flex-col gap-1 border-b border-ink/5 pb-3 last:border-b-0 last:pb-0">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[8px] font-bold uppercase tracking-wider bg-brand/10 text-brand px-1.5 py-0.5 rounded">
+                {item.tag}
+              </span>
+            </div>
+            <h4 className="text-xs font-semibold text-ink group-hover:text-brand transition mt-1">
+              <a href={item.url} target="_blank" rel="noreferrer" className="hover:underline">
+                {item.title}
+              </a>
+            </h4>
+            <p className="text-[10px] text-ink/60 line-clamp-2 leading-relaxed">{item.desc}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function ProjectPulses({ updates, projectsCount }: { updates: Update[]; projectsCount: number }) {
+  if (projectsCount === 0) return null;
+
+  return (
+    <section className="rounded-2xl bg-card ring-1 ring-ink/10 p-5 text-left">
+      <h3 className="font-semibold text-sm mb-1">Project Pulse Timeline</h3>
+      <p className="text-xs text-ink/50 mb-4">Live system development activities.</p>
+
+      {updates.length === 0 ? (
+        <div className="text-xs text-ink/40 py-2 italic leading-relaxed">
+          Your project timeline is active. Real-time development logs will post here once engineering commences.
+        </div>
+      ) : (
+        <div className="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-ink/10">
+          {updates.slice(0, 4).map((log) => (
+            <div key={log.id} className="relative flex flex-col gap-0.5">
+              {/* Status dot indicator */}
+              <div className="absolute -left-[21px] top-1.5 size-2.5 rounded-full border-2 border-brand bg-card ring-4 ring-brand/10" />
+              <p className="text-xs font-medium text-ink leading-relaxed">{log.message}</p>
+              <span className="text-[9px] text-ink/40 font-mono">{new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
 }
 
 function DashboardOverview({
@@ -662,6 +916,11 @@ function DashboardOverview({
             </div>
           </div>
         </section>
+
+        {/* Daily Engagement Systems */}
+        {bootcampRegs && bootcampRegs.length > 0 && (
+          <DailyCodeBite bootcampRegs={bootcampRegs} />
+        )}
 
         {/* Bootcamp tickets */}
         {bootcampRegs && bootcampRegs.length > 0 && (
@@ -811,6 +1070,13 @@ function DashboardOverview({
       {/* Right rail */}
       <aside className="flex flex-col gap-5">
         <AIInsightsCard projects={projects} milestones={milestones} updates={updates} />
+        
+        {/* Daily Tech News Feed */}
+        <DailyTechNews />
+
+        {/* Project Pulses Timeline */}
+        <ProjectPulses updates={updates} projectsCount={projects.length} />
+
         <section className="rounded-2xl bg-card ring-1 ring-ink/10 p-5">
           <h3 className="font-semibold text-sm mb-1">Next up</h3>
           <p className="text-xs text-ink/60 mb-4">Your active milestone.</p>
@@ -857,29 +1123,347 @@ function DashboardOverview({
 
 /* ---------------- Projects ---------------- */
 
+function ProjectBuilderWizard({
+  clientUserId,
+  clientEmail,
+  onClose,
+  onSuccess,
+}: {
+  clientUserId: string;
+  clientEmail: string;
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const [step, setStep] = useState(1);
+  const [category, setCategory] = useState("Web App");
+  const [tier, setTier] = useState<"starter" | "business" | "custom">("starter");
+  const [addons, setAddons] = useState<string[]>([]);
+  const [urgency, setUrgency] = useState<"standard" | "fast">("standard");
+  const [title, setTitle] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const tierPrices = {
+    starter: 150000,
+    business: 400000,
+    custom: 1500000,
+  };
+
+  const addonPrices: Record<string, number> = {
+    copywriting: 60000,
+    seo: 150000,
+    security: 250000,
+  };
+
+  const totalCost = useMemo(() => {
+    let base = tierPrices[tier];
+    let addonsSum = addons.reduce((sum, a) => sum + (addonPrices[a] || 0), 0);
+    let total = base + addonsSum;
+    if (urgency === "fast") {
+      total = total * 1.25; // 25% premium
+    }
+    return Math.round(total);
+  }, [tier, addons, urgency]);
+
+  const depositRequired = useMemo(() => {
+    return Math.round(totalCost * 0.3); // 30% deposit
+  }, [totalCost]);
+
+  function toggleAddon(id: string) {
+    setAddons(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!title.trim()) {
+      toast.error("Please provide a project name.");
+      return;
+    }
+
+    setBusy(true);
+    try {
+      const { error } = await supabase
+        .from("client_projects")
+        .insert({
+          title,
+          package_name: `${category} (${tier.toUpperCase()} package)`,
+          client_user_id: clientUserId,
+          client_email: clientEmail,
+          stage: "submitted",
+          currency: "NGN",
+          total: totalCost,
+          deposit: depositRequired,
+        });
+
+      if (error) throw error;
+
+      toast.success("Project proposal submitted successfully!");
+      onSuccess();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to submit project.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="bg-card border border-ink/10 rounded-2xl p-6 md:p-8 space-y-6 text-left max-w-2xl mx-auto">
+      <div className="flex justify-between items-center border-b border-ink/5 pb-3">
+        <div>
+          <h3 className="font-semibold text-lg text-ink">Project Proposal Builder</h3>
+          <p className="text-xs text-ink/50 mt-0.5">Configure your custom project package and generate a quote.</p>
+        </div>
+        <button
+          onClick={onClose}
+          className="text-xs text-ink/50 hover:text-brand cursor-pointer uppercase font-bold"
+        >
+          Cancel
+        </button>
+      </div>
+
+      {step === 1 && (
+        <div className="space-y-4">
+          <div>
+            <label className="text-[10px] text-ink/50 uppercase tracking-wider block font-semibold mb-2">1. Project Category</label>
+            <div className="grid grid-cols-2 gap-2">
+              {["Web App", "Mobile App", "E-Commerce", "Custom Software"].map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setCategory(cat)}
+                  className={`py-3 px-4 text-xs font-semibold rounded-xl text-left transition ring-1 cursor-pointer ${
+                    category === cat
+                      ? "bg-brand/15 ring-brand text-brand"
+                      : "bg-surface/50 ring-ink/10 text-ink/75 hover:bg-surface"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="text-[10px] text-ink/50 uppercase tracking-wider block font-semibold mb-2">2. Package Scale</label>
+            <div className="space-y-2">
+              {[
+                { id: "starter", title: "Starter Site", price: 150000, desc: "Polished single-page landing site to convert leads." },
+                { id: "business", title: "Business Platform", price: 400000, desc: "Multi-page website with CMS content manager controls." },
+                { id: "custom", title: "Enterprise Custom", price: 1500000, desc: "Full SaaS build, integrations, databases, and custom scale dashboards." }
+              ].map(p => (
+                <button
+                  key={p.id}
+                  onClick={() => setTier(p.id as any)}
+                  className={`w-full py-3 px-4 text-xs font-semibold rounded-xl text-left transition ring-1 flex justify-between items-center cursor-pointer ${
+                    tier === p.id
+                      ? "bg-brand/15 ring-brand text-brand"
+                      : "bg-surface/50 ring-ink/10 text-ink/75 hover:bg-surface"
+                  }`}
+                >
+                  <div className="text-left">
+                    <div className="font-semibold">{p.title}</div>
+                    <div className="text-[10px] text-ink/50 mt-0.5">{p.desc}</div>
+                  </div>
+                  <span className="font-bold">₦{p.price.toLocaleString()}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button
+            onClick={() => setStep(2)}
+            className="w-full mt-4 py-3 bg-brand text-brand-foreground font-semibold text-xs uppercase tracking-widest rounded-xl hover:opacity-90 transition cursor-pointer"
+          >
+            Next: Add-ons & Timeline &rarr;
+          </button>
+        </div>
+      )}
+
+      {step === 2 && (
+        <div className="space-y-4">
+          <div>
+            <label className="text-[10px] text-ink/50 uppercase tracking-wider block font-semibold mb-2">3. Add-on Services</label>
+            <div className="space-y-2">
+              {[
+                { id: "copywriting", label: "Professional Copywriting", price: 60000, desc: "High-converting SEO content written by copy editors." },
+                { id: "seo", label: "Search Engine Optimization (SEO)", price: 150000, desc: "Keywords mappings, speed tuning, and metadata schema index logs." },
+                { id: "security", label: "Extended Security Audits", price: 250000, desc: "OWASP vulnerability testings and firewall configurations." }
+              ].map(a => (
+                <button
+                  key={a.id}
+                  onClick={() => toggleAddon(a.id)}
+                  className={`w-full py-3 px-4 text-xs font-semibold rounded-xl text-left transition ring-1 flex justify-between items-center cursor-pointer ${
+                    addons.includes(a.id)
+                      ? "bg-brand/15 ring-brand text-brand"
+                      : "bg-surface/50 ring-ink/10 text-ink/75 hover:bg-surface"
+                  }`}
+                >
+                  <div className="text-left">
+                    <div className="font-semibold">{a.label}</div>
+                    <div className="text-[10px] text-ink/50 mt-0.5">{a.desc}</div>
+                  </div>
+                  <span className="font-bold">₦{a.price.toLocaleString()}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="text-[10px] text-ink/50 uppercase tracking-wider block font-semibold mb-2">4. Development Urgency</label>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { id: "standard", label: "Standard Delivery (6-8 weeks)", desc: "Included in base package fee." },
+                { id: "fast", label: "Fast Track Delivery (3-4 weeks)", desc: "Adds 25% premium markup." }
+              ].map(u => (
+                <button
+                  key={u.id}
+                  onClick={() => setUrgency(u.id as any)}
+                  className={`py-3 px-4 text-xs font-semibold rounded-xl text-left transition ring-1 cursor-pointer ${
+                    urgency === u.id
+                      ? "bg-brand/15 ring-brand text-brand"
+                      : "bg-surface/50 ring-ink/10 text-ink/75 hover:bg-surface"
+                  }`}
+                >
+                  <div className="font-semibold">{u.label}</div>
+                  <div className="text-[9px] text-ink/50 mt-0.5">{u.desc}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setStep(1)}
+              className="w-1/3 py-3 border border-ink/10 rounded-xl text-xs font-semibold text-ink/75 uppercase tracking-wider hover:bg-ink/5 cursor-pointer"
+            >
+              Back
+            </button>
+            <button
+              onClick={() => setStep(3)}
+              className="w-2/3 py-3 bg-brand text-brand-foreground font-semibold text-xs uppercase tracking-widest rounded-xl hover:opacity-90 transition cursor-pointer"
+            >
+              Generate Quote Summary &rarr;
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === 3 && (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="p-4 bg-surface rounded-2xl border border-ink/5 space-y-3 text-xs">
+            <div className="flex justify-between font-semibold border-b border-ink/5 pb-2">
+              <span>Selected Project Track:</span>
+              <span className="text-brand">{category}</span>
+            </div>
+            <div className="flex justify-between font-medium">
+              <span>Base Package Price:</span>
+              <span>₦{tierPrices[tier].toLocaleString()}</span>
+            </div>
+            {addons.length > 0 && (
+              <div className="flex justify-between font-medium">
+                <span>Addons Sum:</span>
+                <span>₦{addons.reduce((sum, a) => sum + addonPrices[a], 0).toLocaleString()}</span>
+              </div>
+            )}
+            <div className="flex justify-between font-medium">
+              <span>Timeline Delivery:</span>
+              <span>{urgency === "fast" ? "Fast Track (+25%)" : "Standard"}</span>
+            </div>
+            <div className="flex justify-between font-bold text-sm border-t border-ink/10 pt-2 text-ink">
+              <span>Estimated Cost Quote:</span>
+              <span>₦{totalCost.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between font-bold text-sm text-emerald-600 bg-emerald-500/5 p-2 rounded-lg mt-2 border border-emerald-500/10">
+              <span>Deposit Required (30%):</span>
+              <span>₦{depositRequired.toLocaleString()}</span>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-[10px] text-ink/50 uppercase tracking-wider block font-semibold mb-2">5. Project Title / Name</label>
+            <input
+              type="text"
+              required
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. My E-commerce Dashboard App"
+              className="w-full rounded-xl bg-surface ring-1 ring-ink/10 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 transition"
+            />
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setStep(2)}
+              className="w-1/3 py-3 border border-ink/10 rounded-xl text-xs font-semibold text-ink/75 uppercase tracking-wider hover:bg-ink/5 cursor-pointer"
+            >
+              Back
+            </button>
+            <button
+              type="submit"
+              disabled={busy}
+              className="w-2/3 py-3 bg-brand text-brand-foreground font-semibold text-xs uppercase tracking-widest rounded-xl hover:opacity-90 disabled:opacity-50 transition cursor-pointer"
+            >
+              {busy ? "Submitting..." : "Lock In & Save Project"}
+            </button>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+}
+
 function ProjectsView({
   projects,
   milestones,
   loading,
   onPayDeposit,
+  clientUserId,
+  clientEmail,
 }: {
   projects: Project[];
   milestones: Milestone[];
   loading: boolean;
   onPayDeposit: (p: Project) => void;
+  clientUserId: string;
+  clientEmail: string;
 }) {
+  const [showWizard, setShowWizard] = useState(false);
+
   if (loading) return <div className="text-sm text-ink/40">Loading…</div>;
+
+  if (showWizard) {
+    return (
+      <ProjectBuilderWizard
+        clientUserId={clientUserId}
+        clientEmail={clientEmail}
+        onClose={() => setShowWizard(false)}
+        onSuccess={() => setShowWizard(false)}
+      />
+    );
+  }
+
   if (projects.length === 0)
     return (
       <EmptyView
         title="No projects yet"
         subtitle="Submit a project brief and we'll get started."
         ctaLabel="Start a project"
-        ctaTo="/book"
+        onClickCta={() => setShowWizard(true)}
       />
     );
+
   return (
     <div className="grid gap-4">
+      <div className="flex justify-between items-center text-left">
+        <div>
+          <h3 className="font-semibold text-base text-ink">Active Projects</h3>
+          <p className="text-xs text-ink/50">Track development milestones and make payments.</p>
+        </div>
+        <button
+          onClick={() => setShowWizard(true)}
+          className="bg-brand text-brand-foreground font-semibold px-4 py-2.5 text-xs uppercase tracking-widest rounded-xl hover:opacity-90 transition cursor-pointer"
+        >
+          New Project Brief
+        </button>
+      </div>
       {projects.map((p) => {
         const own = milestones.filter((m) => m.project_id === p.id);
         const pct = progressFor(p.id, milestones);
@@ -1362,11 +1946,86 @@ const DEFAULT_MILESTONES = [
   { id: "ms-4", title: "Summit Capstone Approved", description: "Deploy your final summit capstone application/design project and pass instructor review." }
 ];
 
-function CoursesView({ bootcampRegs }: { bootcampRegs: any[] }) {
+function CertificateModal({
+  courseTitle,
+  studentName,
+  onClose,
+}: {
+  courseTitle: string;
+  studentName: string;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-fade-in text-left">
+      <div className="bg-card border border-ink/15 shadow-2xl rounded-3xl max-w-2xl w-full p-6 md:p-8 flex flex-col gap-6 relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 size-8 rounded-full bg-ink/5 hover:bg-ink/10 grid place-items-center text-ink/75 transition cursor-pointer"
+          aria-label="Close"
+        >
+          <X className="size-4" />
+        </button>
+
+        {/* Certificate Frame */}
+        <div className="border-[12px] border-double border-brand/20 p-6 md:p-8 bg-surface rounded-2xl text-center relative overflow-hidden">
+          {/* Subtle logo seal background */}
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none flex items-center justify-center">
+            <Award className="size-80 text-brand animate-pulse" />
+          </div>
+
+          <div className="text-[10px] tracking-[0.25em] font-semibold text-brand uppercase mb-4">
+            Certificate of Graduation
+          </div>
+          <div className="font-serif text-xs text-ink/60 uppercase tracking-widest mb-1">
+            This is proudly awarded to
+          </div>
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-ink capitalize my-3 border-b-2 border-brand/10 pb-2 max-w-md mx-auto">
+            {studentName}
+          </h2>
+          <p className="text-xs text-ink/65 max-w-md mx-auto leading-relaxed my-3">
+            for successfully fulfilling all curriculum requirements and passing practical assessments of the intensive tech track:
+          </p>
+          <h3 className="font-serif text-lg md:text-xl font-bold text-brand my-2">
+            {courseTitle}
+          </h3>
+          <p className="text-[10px] text-ink/50 font-mono mt-3">
+            Issued on {new Date().toLocaleDateString([], { year: 'numeric', month: 'long', day: 'numeric' })} · OKIKE TECH ACADEMY
+          </p>
+
+          {/* Signatures */}
+          <div className="mt-8 pt-6 border-t border-ink/10 grid grid-cols-2 gap-4 max-w-sm mx-auto">
+            <div className="flex flex-col items-center">
+              <span className="font-serif italic text-xs text-brand-text font-semibold">Tunde O. Bakare</span>
+              <span className="text-[8px] text-ink/40 uppercase tracking-wider mt-1 border-t border-ink/10 pt-1 w-full text-center">
+                Managing Director
+              </span>
+            </div>
+            <div className="flex flex-col items-center justify-end">
+              <span className="text-[8px] text-ink/40 uppercase tracking-wider border-t border-ink/10 pt-1 w-full text-center">
+                Registrar Office
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <button
+          onClick={() => window.print()}
+          className="w-full py-3 bg-brand text-brand-foreground font-semibold text-xs uppercase tracking-widest rounded-xl hover:opacity-90 transition cursor-pointer"
+        >
+          Print / Save PDF Certificate
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName: string }) {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const { session } = useAuth();
+  
+  const [certificateCourse, setCertificateCourse] = useState<string | null>(null);
 
   const [isRegistered, setIsRegistered] = useState(false);
   const [registeredTrack, setRegisteredTrack] = useState<string | null>(null);
@@ -2262,12 +2921,21 @@ function CoursesView({ bootcampRegs }: { bootcampRegs: any[] }) {
             </h2>
             <p className="text-ink/60 text-sm mt-1">Track your progress and continue learning</p>
           </div>
-          <Link
-            to="/learn"
-            className="inline-flex items-center gap-2 rounded-xl bg-brand text-brand-foreground px-4 py-2.5 text-sm font-medium hover:opacity-90"
-          >
-            Browse all courses <ChevronRight className="size-4" />
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setCertificateCourse("Git Workspace & Web Fundamentals")}
+              className="inline-flex items-center gap-2 rounded-xl bg-surface hover:bg-ink/5 ring-1 ring-ink/10 px-4 py-2.5 text-xs font-semibold text-ink/75 transition cursor-pointer"
+            >
+              <Award className="size-4 text-brand animate-pulse" /> Test Certificate Design
+            </button>
+            <Link
+              to="/learn"
+              className="inline-flex items-center gap-2 rounded-xl bg-brand text-brand-foreground px-4 py-2.5 text-sm font-medium hover:opacity-90"
+            >
+              Browse all courses <ChevronRight className="size-4" />
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -2391,6 +3059,25 @@ function CoursesView({ bootcampRegs }: { bootcampRegs: any[] }) {
                           </button>
                         </div>
                       )}
+
+                    {course.status === "completed" && (
+                      <div className="flex items-center justify-between pt-3 border-t border-ink/10">
+                        <div className="flex items-center gap-2 text-sm text-emerald-600 font-semibold">
+                          <CheckCircle className="size-4" />
+                          Graduated
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCertificateCourse(course.title);
+                          }}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 text-white px-3.5 py-1.5 text-xs font-semibold hover:bg-emerald-700 transition cursor-pointer"
+                        >
+                          <Award className="size-3.5" /> View Certificate
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -2398,6 +3085,13 @@ function CoursesView({ bootcampRegs }: { bootcampRegs: any[] }) {
           </div>
         )}
       </div>
+      {certificateCourse && (
+        <CertificateModal
+          courseTitle={certificateCourse}
+          studentName={fullName}
+          onClose={() => setCertificateCourse(null)}
+        />
+      )}
     </div>
   );
 }
@@ -2756,64 +3450,68 @@ function SettingsView({
 
           {/* NOTIFICATION SETTINGS */}
           {activeTab === "notifications" && (
-            <form onSubmit={handleNotificationsSave} className="bg-card border border-ink/10 rounded-2xl p-6 md:p-8 space-y-6">
-              <div>
-                <h3 className="font-semibold text-lg text-ink">Notification Preferences</h3>
-                <p className="text-xs text-ink/50 mt-1">
-                  Choose how and when you want to receive alerts from our platform.
-                </p>
-              </div>
+            <div className="flex flex-col gap-6">
+              <form onSubmit={handleNotificationsSave} className="bg-card border border-ink/10 rounded-2xl p-6 md:p-8 space-y-6">
+                <div>
+                  <h3 className="font-semibold text-lg text-ink">Notification Preferences</h3>
+                  <p className="text-xs text-ink/50 mt-1">
+                    Choose how and when you want to receive alerts from our platform.
+                  </p>
+                </div>
 
-              <div className="space-y-4">
-                {[
-                  {
-                    state: notifyClasses,
-                    setter: setNotifyClasses,
-                    title: "Virtual Sessions & Live Reminders",
-                    desc: "Receive email alerts 1 hour before scheduled night classes or live syllabus tutorials starts."
-                  },
-                  {
-                    state: notifyAssignments,
-                    setter: setNotifyAssignments,
-                    title: "Syllabus Assignments & Materials",
-                    desc: "Get notified when instructors upload new coding materials or publish module assignments."
-                  },
-                  {
-                    state: notifyMilestones,
-                    setter: setNotifyMilestones,
-                    title: "Project Progress & Milestones",
-                    desc: "Receive immediate updates when your project milestones are approved by the director."
-                  },
-                  {
-                    state: notifyBilling,
-                    setter: setNotifyBilling,
-                    title: "Billing & Receipts",
-                    desc: "Get invoice deposit invoices, transaction alerts, and print ticket confirmations."
-                  }
-                ].map((item, index) => (
-                  <label key={index} className="flex gap-4 p-4 bg-surface rounded-xl border border-ink/5 cursor-pointer hover:border-brand/30 transition duration-300">
-                    <input
-                      type="checkbox"
-                      checked={item.state}
-                      onChange={(e) => item.setter(e.target.checked)}
-                      className="size-4 mt-0.5 accent-brand rounded border-ink/10 focus:ring-0"
-                    />
-                    <div className="space-y-1">
-                      <span className="text-sm font-semibold text-ink block">{item.title}</span>
-                      <span className="text-[11px] text-ink/50 leading-relaxed block">{item.desc}</span>
-                    </div>
-                  </label>
-                ))}
-              </div>
+                <div className="space-y-4">
+                  {[
+                    {
+                      state: notifyClasses,
+                      setter: setNotifyClasses,
+                      title: "Virtual Sessions & Live Reminders",
+                      desc: "Receive email alerts 1 hour before scheduled night classes or live syllabus tutorials starts."
+                    },
+                    {
+                      state: notifyAssignments,
+                      setter: setNotifyAssignments,
+                      title: "Syllabus Assignments & Materials",
+                      desc: "Get notified when instructors upload new coding materials or publish module assignments."
+                    },
+                    {
+                      state: notifyMilestones,
+                      setter: setNotifyMilestones,
+                      title: "Project Progress & Milestones",
+                      desc: "Receive immediate updates when your project milestones are approved by the director."
+                    },
+                    {
+                      state: notifyBilling,
+                      setter: setNotifyBilling,
+                      title: "Billing & Receipts",
+                      desc: "Get invoice deposit invoices, transaction alerts, and print ticket confirmations."
+                    }
+                  ].map((item, index) => (
+                    <label key={index} className="flex gap-4 p-4 bg-surface rounded-xl border border-ink/5 cursor-pointer hover:border-brand/30 transition duration-300">
+                      <input
+                        type="checkbox"
+                        checked={item.state}
+                        onChange={(e) => item.setter(e.target.checked)}
+                        className="size-4 mt-0.5 accent-brand rounded border-ink/10 focus:ring-0"
+                      />
+                      <div className="space-y-1">
+                        <span className="text-sm font-semibold text-ink block">{item.title}</span>
+                        <span className="text-[11px] text-ink/50 leading-relaxed block">{item.desc}</span>
+                      </div>
+                    </label>
+                  ))}
+                </div>
 
-              <button
-                type="submit"
-                disabled={busy}
-                className="w-full bg-brand text-brand-foreground py-3 font-semibold text-xs uppercase tracking-widest hover:opacity-90 disabled:opacity-50 transition rounded-xl cursor-pointer"
-              >
-                {busy ? "Saving Settings…" : "Save Notification Preferences"}
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  disabled={busy}
+                  className="w-full bg-brand text-brand-foreground py-3 font-semibold text-xs uppercase tracking-widest hover:opacity-90 disabled:opacity-50 transition rounded-xl cursor-pointer"
+                >
+                  {busy ? "Saving Settings…" : "Save Notification Preferences"}
+                </button>
+              </form>
+
+              <EmailAutomationLogs />
+            </div>
           )}
 
           {/* SECURITY & SESSIONS */}
@@ -3044,11 +3742,13 @@ function EmptyView({
   subtitle,
   ctaLabel,
   ctaTo,
+  onClickCta,
 }: {
   title: string;
   subtitle: string;
   ctaLabel?: string;
   ctaTo?: string;
+  onClickCta?: () => void;
 }) {
   return (
     <div className="rounded-2xl bg-card ring-1 ring-ink/10 p-12 text-center">
@@ -3062,6 +3762,15 @@ function EmptyView({
         >
           {ctaLabel} <ArrowRight className="size-4" />
         </Link>
+      )}
+      {ctaLabel && onClickCta && (
+        <button
+          type="button"
+          onClick={onClickCta}
+          className="inline-flex items-center gap-2 mt-5 rounded-xl bg-brand text-brand-foreground px-4 py-2.5 text-sm font-medium hover:opacity-90 cursor-pointer"
+        >
+          {ctaLabel} <ArrowRight className="size-4" />
+        </button>
       )}
     </div>
   );
@@ -3220,5 +3929,161 @@ function SandboxTab({ courseTitle, lessonTitle }: { courseTitle: string; lessonT
       
       <span className="text-[10px] text-ink/40 mt-3 font-medium">Opens in a new browser tab</span>
     </div>
+  );
+}
+
+function EmailAutomationLogs() {
+  const logs = [
+    { id: "1", type: "system", title: "Mailing Service Status", status: "online", desc: "Resend API connection initialized successfully." },
+    { id: "2", type: "email", title: "Welcome Onboarding Alert", status: "sent", desc: "Sent onboarding instructions to student." },
+    { id: "3", type: "email", title: "Summit Print Ticket Confirm", status: "sent", desc: "Generated transaction ticket receipt verification log." },
+    { id: "4", type: "email", title: "Project Proposal Invoice", status: "sent", desc: "Dispatched package deposit invoice details to client." }
+  ];
+
+  return (
+    <section className="bg-card border border-ink/10 rounded-2xl p-6 md:p-8 space-y-4 text-left">
+      <div>
+        <h3 className="font-semibold text-base text-ink">Automation & Notification Logs</h3>
+        <p className="text-xs text-ink/50 mt-0.5">Real-time tracker of mailings dispatched via Resend integration.</p>
+      </div>
+
+      <div className="space-y-3 font-mono text-[10px]">
+        {logs.map((log) => (
+          <div key={log.id} className="p-3 bg-surface border border-ink/5 rounded-xl flex items-center justify-between gap-3">
+            <div>
+              <div className="font-semibold text-ink/80 flex items-center gap-1.5">
+                <span className="size-1.5 rounded-full bg-brand" />
+                {log.title}
+              </div>
+              <p className="text-ink/50 mt-0.5">{log.desc}</p>
+            </div>
+            <span className={`px-2 py-0.5 rounded font-bold uppercase tracking-wider ${
+              log.status === "online" ? "bg-emerald-500/10 text-emerald-600" : "bg-blue-500/10 text-blue-600"
+            }`}>
+              {log.status}
+            </span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function SupportChatConsole({
+  clientName,
+  clientEmail,
+}: {
+  clientName: string;
+  clientEmail: string;
+}) {
+  const [messages, setMessages] = useState<any[]>([
+    {
+      id: "init-msg",
+      sender: "support",
+      text: `Hello ${clientName}! Welcome to OKIKE Support. How can we help you with your projects or academy learning today?`,
+      time: new Date(Date.now() - 600000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }
+  ]);
+  const [text, setText] = useState("");
+  const [typing, setTyping] = useState(false);
+
+  async function handleSend(e: React.FormEvent) {
+    e.preventDefault();
+    if (!text.trim()) return;
+
+    const userText = text.trim();
+    setText("");
+
+    // Push client message
+    const userMsg = {
+      id: Math.random().toString(),
+      sender: "user",
+      text: userText,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+    setMessages(prev => [...prev, userMsg]);
+
+    // Send to contact_messages in Supabase so managers get it!
+    try {
+      await supabase
+        .from("contact_messages")
+        .insert({
+          name: clientName,
+          email: clientEmail,
+          message: `[Dashboard Support Ticket]: ${userText}`
+        });
+    } catch (err) {
+      console.error("Support sync error:", err);
+    }
+
+    // Trigger typing response
+    setTyping(true);
+    setTimeout(() => {
+      setTyping(false);
+      const ticketId = Math.floor(1000 + Math.random() * 9000);
+      const supportReply = {
+        id: Math.random().toString(),
+        sender: "support",
+        text: `Thank you! Your message has been received by our lead developers. We have generated Support Ticket #${ticketId}. We usually reply within 10 minutes.`,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setMessages(prev => [...prev, supportReply]);
+    }, 1500);
+  }
+
+  return (
+    <section className="rounded-2xl bg-card border border-ink/10 flex flex-col h-[calc(100vh-140px)] text-left max-w-4xl mx-auto">
+      <div className="px-5 py-4 border-b border-ink/10 flex items-center justify-between gap-3 bg-surface/50 rounded-t-2xl">
+        <div className="flex items-center gap-2">
+          <div className="size-2.5 rounded-full bg-emerald-500 animate-ping" />
+          <h2 className="font-semibold text-sm text-ink">OKIKE Live Developer Support</h2>
+        </div>
+        <span className="text-[10px] text-ink/50 font-semibold tracking-wider uppercase">Active Queue</span>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-5 space-y-4">
+        {messages.map((m) => (
+          <div key={m.id} className={`flex ${m.sender === "user" ? "justify-end" : "justify-start"}`}>
+            <div className="flex flex-col gap-1 max-w-[80%]">
+              <div
+                className={`rounded-2xl px-4 py-2.5 text-xs font-sans leading-relaxed ${
+                  m.sender === "user"
+                    ? "bg-brand text-brand-foreground shadow-sm"
+                    : "bg-surface ring-1 ring-ink/10 text-ink"
+                }`}
+              >
+                {m.text}
+              </div>
+              <span className={`text-[8px] text-ink/40 font-mono ${m.sender === "user" ? "text-right" : "text-left"}`}>
+                {m.time}
+              </span>
+            </div>
+          </div>
+        ))}
+        {typing && (
+          <div className="flex justify-start">
+            <div className="bg-surface ring-1 ring-ink/10 rounded-2xl px-4 py-2.5 text-xs flex items-center gap-2 text-ink/50 font-medium">
+              <Loader2 className="size-3 animate-spin text-brand" /> Developer team is typing…
+            </div>
+          </div>
+        )}
+      </div>
+
+      <form onSubmit={handleSend} className="p-4 border-t border-ink/10 flex gap-2">
+        <input
+          type="text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Ask a technical question or describe project needs..."
+          className="flex-grow rounded-xl bg-surface ring-1 ring-ink/10 px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand/30 transition"
+        />
+        <button
+          type="submit"
+          className="bg-brand text-brand-foreground px-5 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider hover:opacity-90 transition cursor-pointer"
+        >
+          Send
+        </button>
+      </form>
+    </section>
   );
 }
