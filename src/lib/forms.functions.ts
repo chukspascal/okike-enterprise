@@ -315,6 +315,22 @@ ${!data.is_department_student ? `<p style="font-size:13px;color:#e67e00;margin:1
     return { ok: true as const, reference: data.is_department_student ? null : reference };
   });
 
+export const updateBootcampPaymentReference = createServerFn({ method: "POST" })
+  .inputValidator((data) => z.object({ id: z.string() }).parse(data))
+  .handler(async ({ data }) => {
+    const newReference = "bootcamp_" + Math.random().toString(36).slice(2, 15) + "_" + Date.now();
+    const { error } = await supabaseAdmin
+      .from("bootcamp_registrations" as never)
+      .update({ payment_reference: newReference } as never)
+      .eq("id" as never, data.id as never);
+
+    if (error) {
+      return { ok: false as const, error: "Failed to update payment reference." };
+    }
+    return { ok: true as const, reference: newReference };
+  });
+
+
 // ─── Payment Verification ───────────────────────────────────────────────────
 
 const verifyPaymentSchema = z.object({

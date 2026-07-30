@@ -7,7 +7,7 @@ import { ThemeToggle } from "@/components/site/ThemeToggle";
 import { useServerFn } from "@tanstack/react-start";
 import { askAssistant, generateInsights } from "@/lib/ai-assistant.functions";
 import { toast } from "sonner";
-import { verifyProjectDeposit, verifyBootcampPayment, sendPasswordChangedEmail } from "@/lib/forms.functions";
+import { verifyProjectDeposit, verifyBootcampPayment, updateBootcampPaymentReference, sendPasswordChangedEmail } from "@/lib/forms.functions";
 import { getBootcampCoursePrice } from "@/lib/utils";
 import heroImg from "@/assets/dashboard-hero.jpg";
 import heroImgLight from "@/assets/dashboard-hero-light.png";
@@ -96,6 +96,16 @@ function DashboardPage() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [bootcampRegs, setBootcampRegs] = useState<any[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
+
+  const [readUpdates, setReadUpdates] = useState<string[]>(() => {
+    const saved = typeof window !== "undefined" ? localStorage.getItem("okike_read_updates") : null;
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [deletedUpdates, setDeletedUpdates] = useState<string[]>(() => {
+    const saved = typeof window !== "undefined" ? localStorage.getItem("okike_deleted_updates") : null;
+    return saved ? JSON.parse(saved) : [];
+  });
+
 
   useEffect(() => {
     if (!loading && !session) navigate({ to: "/login" });
@@ -191,8 +201,9 @@ function DashboardPage() {
 
   const verifyDeposit = useServerFn(verifyProjectDeposit);
   const verifyBootcamp = useServerFn(verifyBootcampPayment);
+  const updateBootcampRef = useServerFn(updateBootcampPaymentReference);
 
-  function handlePayBootcamp(reg: any) {
+  async function handlePayBootcamp(reg: any) {
     const koraKey = import.meta.env.VITE_KORAPAY_PUBLIC_KEY;
     if (!koraKey) {
       toast.error("Payment setup is missing.");
@@ -203,9 +214,19 @@ function DashboardPage() {
       toast.error("Payment gateway failed to load.");
       return;
     }
+
+    toast.loading("Initializing payment...");
+    const refRes = await updateBootcampRef({ data: { id: reg.id } });
+    toast.dismiss();
+
+    if (!refRes.ok) {
+      toast.error(refRes.error || "Could not prepare payment.");
+      return;
+    }
+
     korapay.initialize({
       key: koraKey,
-      reference: reg.payment_reference,
+      reference: refRes.reference,
       amount: getBootcampCoursePrice(reg.course),
       currency: "NGN",
       customer: {
@@ -215,7 +236,7 @@ function DashboardPage() {
       onSuccess: async (transaction: any) => {
         toast.loading("Confirming payment...");
         try {
-          const res = await verifyBootcamp({ data: { reference: reg.payment_reference } });
+          const res = await verifyBootcamp({ data: { reference: refRes.reference! } });
           toast.dismiss();
           if (res.ok) {
             toast.success("Payment confirmed! Your ticket is active.");
@@ -232,6 +253,7 @@ function DashboardPage() {
       onClose: () => toast.warning("Payment closed."),
     });
   }
+
 
   function handlePayDeposit(project: Project) {
     if (!user?.email || !project.deposit) return;
@@ -427,9 +449,9 @@ function DashboardPage() {
                 title="View latest updates"
               >
                 <Bell className="size-4 text-ink/70" />
-                {updates.length > 0 && (
+                {updates.filter(u => !deletedUpdates.includes(u.id) && !readUpdates.includes(u.id)).length > 0 && (
                   <span className="absolute -top-1 -right-1 size-4 rounded-full bg-brand text-[10px] font-semibold text-brand-foreground grid place-items-center animate-pulse">
-                    {updates.length}
+                    {updates.filter(u => !deletedUpdates.includes(u.id) && !readUpdates.includes(u.id)).length}
                   </span>
                 )}
               </button>
@@ -445,19 +467,49 @@ function DashboardPage() {
                       Close
                     </button>
                   </div>
-                  {updates.length === 0 ? (
+                  {updates.filter(u => !deletedUpdates.includes(u.id)).length === 0 ? (
                     <div className="text-center py-6 text-xs text-ink/40">No new updates or alerts.</div>
                   ) : (
                     <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
-                      {updates.map((up) => {
+                      {updates
+                        .filter(u => !deletedUpdates.includes(u.id))
+                        .map((up) => {
                         const proj = projects.find(p => p.id === up.project_id);
+                        const isRead = readUpdates.includes(up.id);
                         return (
-                          <div key={up.id} className="text-xs p-2 bg-surface rounded-xl flex flex-col gap-1 ring-1 ring-ink/5 text-left">
-                            <div className="flex justify-between items-center">
+                          <div key={up.id} className={`text-xs p-2 rounded-xl flex flex-col gap-1 ring-1 text-left relative group ${isRead ? "bg-surface/50 ring-ink/5 opacity-70" : "bg-surface ring-ink/10"}`}>
+                            <div className="flex justify-between items-center pr-10">
                               <span className="font-semibold text-brand-text truncate max-w-[15ch]">{proj?.title || "Project Update"}</span>
                               <span className="text-[9px] text-ink/40">{new Date(up.created_at).toLocaleDateString()}</span>
                             </div>
-                            <p className="text-ink/85 leading-relaxed font-sans">{up.message}</p>
+                            <p className="text-ink/85 leading-relaxed font-sans pr-10">{up.message}</p>
+
+                            <div className="absolute right-2 top-2 bottom-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity justify-center">
+                              {!isRead && (
+                                <button
+                                  title="Mark as read"
+                                  onClick={() => {
+                                    const next = [...readUpdates, up.id];
+                                    setReadUpdates(next);
+                                    localStorage.setItem("okike_read_updates", JSON.stringify(next));
+                                  }}
+                                  className="p-1 rounded hover:bg-ink/10 text-brand"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </button>
+                              )}
+                              <button
+                                title="Delete"
+                                onClick={() => {
+                                  const next = [...deletedUpdates, up.id];
+                                  setDeletedUpdates(next);
+                                  localStorage.setItem("okike_deleted_updates", JSON.stringify(next));
+                                }}
+                                className="p-1 rounded hover:bg-red-500/10 text-red-500"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                              </button>
+                            </div>
                           </div>
                         );
                       })}
@@ -465,6 +517,7 @@ function DashboardPage() {
                   )}
                 </div>
               )}
+
             </div>
             <ThemeToggle />
             {(role === "instructor" || role === "admin") && (
@@ -899,6 +952,10 @@ function DailyCodeBite({ bootcampRegs }: { bootcampRegs: any[] }) {
     const saved = typeof window !== "undefined" ? localStorage.getItem("okike_xp") : null;
     return saved ? parseInt(saved, 10) : 0;
   });
+  const [lastStreakDate, setLastStreakDate] = useState(() => {
+    return typeof window !== "undefined" ? localStorage.getItem("okike_last_streak_date") : null;
+  });
+
 
   // Pick first registration course or default to Frontend Web
   const userCourse = bootcampRegs?.[0]?.course || "Frontend Web";
@@ -931,11 +988,20 @@ function DailyCodeBite({ bootcampRegs }: { bootcampRegs: any[] }) {
     if (selectedOption === challenge.correctIndex) {
       setVerified(true);
       setError(false);
-      const nextStreak = streak + 1;
+
+      const todayString = new Date().toDateString();
+      let nextStreak = streak;
+
+      if (lastStreakDate !== todayString) {
+        nextStreak = streak + 1;
+        setStreak(nextStreak);
+        setLastStreakDate(todayString);
+        localStorage.setItem("okike_streak", String(nextStreak));
+        localStorage.setItem("okike_last_streak_date", todayString);
+      }
+      
       const nextXp = xp + 15;
-      setStreak(nextStreak);
       setXp(nextXp);
-      localStorage.setItem("okike_streak", String(nextStreak));
       localStorage.setItem("okike_xp", String(nextXp));
       toast.success("Correct answer! +15 XP added to your dashboard.");
     } else {
@@ -1240,7 +1306,7 @@ function DashboardOverview({
                     onClick={() => onPayBootcamp(reg)}
                     className="w-full py-3 rounded-xl bg-brand text-brand-foreground font-semibold text-xs uppercase tracking-wider hover:opacity-90 transition animate-pulse"
                   >
-                    Pay Registration Fee (₦${getBootcampCoursePrice(reg.course).toLocaleString()}) &rarr;
+                    Pay Registration Fee (₦{getBootcampCoursePrice(reg.course).toLocaleString()}) &rarr;
                   </button>
                 )}
               </section>
