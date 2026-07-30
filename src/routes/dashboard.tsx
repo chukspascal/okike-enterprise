@@ -595,54 +595,309 @@ interface CodeChallenge {
   correctIndex: number;
 }
 
-const CHALLENGES: Record<string, CodeChallenge> = {
-  "Cyber Security": {
-    title: "Daily Cyber Security Challenge",
-    question: "Which tool is commonly used to perform active network scanning and OS fingerprinting?",
-    code: `# Target discovery scan command
-nmap -O -F 192.168.1.1`,
-    options: ["Wireshark", "Metasploit", "Nmap", "Burp Suite"],
-    correctIndex: 2
-  },
-  "Frontend Web": {
-    title: "Daily Frontend Challenge",
-    question: "Which CSS property is used to create smooth transitions between element states?",
-    code: `/* Hover transition animation */
-.btn {
-  transition: all 0.3s ease;
-}`,
-    options: ["animation-duration", "transform-style", "transition", "will-change"],
-    correctIndex: 2
-  },
-  "Mobile Dev": {
-    title: "Daily Mobile Dev Challenge",
-    question: "Which hook is used in React Native navigation to access the navigation prop of a screen?",
-    code: `import { useNavigation } from '@react-navigation/native';
-const navigation = useNavigation();`,
-    options: ["useRoute", "useNavigation", "useLinkTo", "useContext"],
-    correctIndex: 1
-  },
-  "UI/UX Design": {
-    title: "Daily UI/UX Design Challenge",
-    question: "What does visual hierarchy establish in a user interface layout?",
-    code: `/* Visual hierarchy scaling */
-h1 { font-size: 2.25rem; font-weight: 800; }`,
-    options: ["System loading speed", "Order of user attention", "Color contrast ratios", "Breakpoints layout grid"],
-    correctIndex: 1
-  }
+const CHALLENGES: Record<string, CodeChallenge[]> = {
+  "Cyber Security": [
+    {
+      title: "Daily Cyber Security Challenge",
+      question: "Which tool is commonly used to perform active network scanning and OS fingerprinting?",
+      code: `# Target discovery scan command\nnmap -O -F 192.168.1.1`,
+      options: ["Wireshark", "Metasploit", "Nmap", "Burp Suite"],
+      correctIndex: 2
+    },
+    {
+      title: "Daily Cyber Security Challenge",
+      question: "Which of the following is a symmetric key encryption algorithm?",
+      code: `# Encryption algorithm\nconst algo = 'AES-256-CBC';`,
+      options: ["RSA", "AES", "ECC", "Diffie-Hellman"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily Cyber Security Challenge",
+      question: "What is the primary purpose of a web application firewall (WAF)?",
+      code: `# WAF rule example\nSecRule ARGS "@xss" "id:1234,deny"`,
+      options: ["Protect against DDoS", "Filter HTTP/HTTPS traffic", "Provide VPN access", "Encrypt database"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily Cyber Security Challenge",
+      question: "In standard Linux file permissions, what does 'chmod 755' mean?",
+      code: `$ chmod 755 script.sh`,
+      options: ["Read/write/execute for all", "Read/write for owner, read for others", "Read/write/execute for owner, read/execute for others", "Execute only for owner"],
+      correctIndex: 2
+    },
+    {
+      title: "Daily Cyber Security Challenge",
+      question: "What type of attack involves injecting malicious SQL statements into entry fields?",
+      code: `SELECT * FROM users WHERE username = 'admin' OR '1'='1'`,
+      options: ["Cross-Site Scripting", "Cross-Site Request Forgery", "SQL Injection", "Command Injection"],
+      correctIndex: 2
+    },
+    {
+      title: "Daily Cyber Security Challenge",
+      question: "What is the standard port for HTTPS?",
+      code: `# Connect to secure web server\ncurl -v https://example.com`,
+      options: ["80", "443", "8080", "22"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily Cyber Security Challenge",
+      question: "Which tool is widely used for intercepting and modifying HTTP traffic?",
+      code: `# Starting the proxy\njava -jar burpsuite_community.jar`,
+      options: ["Burp Suite", "Hashcat", "John the Ripper", "Hydra"],
+      correctIndex: 0
+    },
+    {
+      title: "Daily Cyber Security Challenge",
+      question: "What is the process of hiding data within another file or message called?",
+      code: `$ steghide embed -cf image.jpg -ef secret.txt`,
+      options: ["Cryptography", "Steganography", "Obfuscation", "Hashing"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily Cyber Security Challenge",
+      question: "Which cryptographic hash function produces a 256-bit hash value?",
+      code: `$ echo -n "hello" | sha256sum`,
+      options: ["MD5", "SHA-1", "SHA-256", "NTLM"],
+      correctIndex: 2
+    },
+    {
+      title: "Daily Cyber Security Challenge",
+      question: "In a typical firewall policy, what does 'implicit deny' mean?",
+      code: `# Firewall rule\nDENY ALL ANY ANY`,
+      options: ["Allow all traffic by default", "Block any traffic not explicitly allowed", "Deny only known bad IP addresses", "Prompt user for every connection"],
+      correctIndex: 1
+    }
+  ],
+  "Frontend Web": [
+    {
+      title: "Daily Frontend Challenge",
+      question: "Which CSS property is used to create smooth transitions between element states?",
+      code: `/* Hover transition animation */\n.btn {\n  transition: all 0.3s ease;\n}`,
+      options: ["animation-duration", "transform-style", "transition", "will-change"],
+      correctIndex: 2
+    },
+    {
+      title: "Daily Frontend Challenge",
+      question: "Which HTML tag is used to define an internal style sheet?",
+      code: `<!-- Internal CSS -->\n<style>\n  body { background-color: linen; }\n</style>`,
+      options: ["<script>", "<style>", "<css>", "<link>"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily Frontend Challenge",
+      question: "How do you select an element with id 'demo' in CSS?",
+      code: `/* CSS id selector */\n#demo {\n  color: red;\n}`,
+      options: [".demo", "#demo", "demo", "*demo"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily Frontend Challenge",
+      question: "Which JavaScript method is used to write HTML output?",
+      code: `// Write to document\ndocument.write("Hello World!");`,
+      options: ["console.log()", "document.write()", "window.alert()", "document.output()"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily Frontend Challenge",
+      question: "What does CSS stand for?",
+      code: `/* CSS Example */\nbody { font-family: Arial; }`,
+      options: ["Computer Style Sheets", "Creative Style Sheets", "Cascading Style Sheets", "Colorful Style Sheets"],
+      correctIndex: 2
+    },
+    {
+      title: "Daily Frontend Challenge",
+      question: "Which element is used to group inline elements?",
+      code: `<!-- Inline grouping -->\n<p>This is a <span class="highlight">test</span>.</p>`,
+      options: ["<div>", "<group>", "<span>", "<section>"],
+      correctIndex: 2
+    },
+    {
+      title: "Daily Frontend Challenge",
+      question: "What is the output of `typeof null` in JavaScript?",
+      code: `console.log(typeof null);`,
+      options: ["null", "undefined", "object", "string"],
+      correctIndex: 2
+    },
+    {
+      title: "Daily Frontend Challenge",
+      question: "In CSS Flexbox, which property defines the alignment along the main axis?",
+      code: `/* Flexbox alignment */\n.container {\n  display: flex;\n  justify-content: center;\n}`,
+      options: ["align-items", "align-content", "justify-content", "flex-direction"],
+      correctIndex: 2
+    },
+    {
+      title: "Daily Frontend Challenge",
+      question: "Which Web API is used to fetch resources asynchronously?",
+      code: `fetch('https://api.example.com/data')\n  .then(res => res.json());`,
+      options: ["XMLHttpRequest", "Fetch API", "Async API", "REST API"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily Frontend Challenge",
+      question: "What does HTML stand for?",
+      code: `<!DOCTYPE html>`,
+      options: ["HyperText Markup Language", "Hyperlinks Text Mark Language", "Home Tool Markup Language", "HyperTool Markup Language"],
+      correctIndex: 0
+    }
+  ],
+  "Mobile Dev": [
+    {
+      title: "Daily Mobile Dev Challenge",
+      question: "Which hook is used in React Native navigation to access the navigation prop of a screen?",
+      code: `import { useNavigation } from '@react-navigation/native';\nconst navigation = useNavigation();`,
+      options: ["useRoute", "useNavigation", "useLinkTo", "useContext"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily Mobile Dev Challenge",
+      question: "Which component is used to create a scrollable list in React Native?",
+      code: `import { ScrollView } from 'react-native';\n\n<ScrollView>\n  <Text>Item 1</Text>\n</ScrollView>`,
+      options: ["ListView", "RecyclerView", "ScrollView", "ScrollList"],
+      correctIndex: 2
+    },
+    {
+      title: "Daily Mobile Dev Challenge",
+      question: "What is used to style components in React Native?",
+      code: `import { StyleSheet } from 'react-native';\n\nconst styles = StyleSheet.create({\n  container: { flex: 1 }\n});`,
+      options: ["CSS", "SCSS", "StyleSheet", "Tailwind"],
+      correctIndex: 2
+    },
+    {
+      title: "Daily Mobile Dev Challenge",
+      question: "Which component handles touch interactions in React Native without giving visual feedback?",
+      code: `import { TouchableWithoutFeedback } from 'react-native';`,
+      options: ["TouchableOpacity", "TouchableHighlight", "TouchableWithoutFeedback", "Button"],
+      correctIndex: 2
+    },
+    {
+      title: "Daily Mobile Dev Challenge",
+      question: "How do you align items to the center of the cross axis in Flexbox?",
+      code: `container: {\n  alignItems: 'center'\n}`,
+      options: ["justifyContent: 'center'", "alignItems: 'center'", "alignContent: 'center'", "textAlign: 'center'"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily Mobile Dev Challenge",
+      question: "Which React Native component is used to display an image?",
+      code: `import { Image } from 'react-native';\n\n<Image source={{ uri: 'https://example.com/logo.png' }} />`,
+      options: ["Img", "Picture", "Image", "ImageView"],
+      correctIndex: 2
+    },
+    {
+      title: "Daily Mobile Dev Challenge",
+      question: "What is the core navigation library often used for Expo and React Native apps?",
+      code: `import { NavigationContainer } from '@react-navigation/native';`,
+      options: ["React Router", "React Navigation", "Expo Router", "Native Navigator"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily Mobile Dev Challenge",
+      question: "Which module provides access to the device's system settings like vibration?",
+      code: `import { Vibration } from 'react-native';\nVibration.vibrate();`,
+      options: ["Device", "Hardware", "Vibration", "Haptics"],
+      correctIndex: 2
+    },
+    {
+      title: "Daily Mobile Dev Challenge",
+      question: "In React Native, what does `SafeAreaView` do?",
+      code: `import { SafeAreaView } from 'react-native';`,
+      options: ["Secures the app from malware", "Renders content within the safe area boundaries of a device", "Encrypts local storage", "Prevents app crashes"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily Mobile Dev Challenge",
+      question: "How do you declare a state variable in a functional React Native component?",
+      code: `const [count, setCount] = useState(0);`,
+      options: ["this.state", "setState", "useState", "useContext"],
+      correctIndex: 2
+    }
+  ],
+  "UI/UX Design": [
+    {
+      title: "Daily UI/UX Design Challenge",
+      question: "What does visual hierarchy establish in a user interface layout?",
+      code: `/* Visual hierarchy scaling */\nh1 { font-size: 2.25rem; font-weight: 800; }`,
+      options: ["System loading speed", "Order of user attention", "Color contrast ratios", "Breakpoints layout grid"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily UI/UX Design Challenge",
+      question: "Which principle refers to the consistent alignment of elements in a design?",
+      code: `/* Grid alignment */\n.grid { display: grid; gap: 16px; }`,
+      options: ["Contrast", "Repetition", "Alignment", "Proximity"],
+      correctIndex: 2
+    },
+    {
+      title: "Daily UI/UX Design Challenge",
+      question: "What is a 'Call to Action' (CTA)?",
+      code: `<!-- CTA Button -->\n<button class="cta-btn">Sign Up Now</button>`,
+      options: ["An error message", "A prompt encouraging user action", "A navigation menu", "A loading spinner"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily UI/UX Design Challenge",
+      question: "Which color model is used for digital screens?",
+      code: `/* Digital color */\ncolor: rgb(255, 0, 0);`,
+      options: ["CMYK", "RGB", "Pantone", "RYB"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily UI/UX Design Challenge",
+      question: "What does UX stand for?",
+      code: `<!-- User Experience Design -->`,
+      options: ["User Experience", "User Interface", "Universal Experience", "Unified Experience"],
+      correctIndex: 0
+    },
+    {
+      title: "Daily UI/UX Design Challenge",
+      question: "What is wireframing?",
+      code: `<!-- Conceptual Layout -->\n<div class="wireframe-box">Header</div>`,
+      options: ["High-fidelity prototype", "A low-fidelity visual representation of a layout", "Adding colors and images", "Writing HTML code"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily UI/UX Design Challenge",
+      question: "Which tool is widely considered an industry standard for UI vector design and prototyping?",
+      code: `/* Vector design tools */`,
+      options: ["Adobe Photoshop", "Figma", "Microsoft Word", "Notepad++"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily UI/UX Design Challenge",
+      question: "What is 'whitespace' or 'negative space' in design?",
+      code: `/* Whitespace */\n.container { padding: 40px; margin: 20px; }`,
+      options: ["A background color that is strictly white", "Empty space around and between elements", "An area for user comments", "A missing image"],
+      correctIndex: 1
+    },
+    {
+      title: "Daily UI/UX Design Challenge",
+      question: "What does 'Responsive Design' mean?",
+      code: `@media (max-width: 768px) {\n  .layout { flex-direction: column; }\n}`,
+      options: ["Designing interfaces that adapt to different screen sizes", "An app that responds quickly to user clicks", "A design with lots of animations", "A design using only vector graphics"],
+      correctIndex: 0
+    },
+    {
+      title: "Daily UI/UX Design Challenge",
+      question: "Which heuristic emphasizes keeping users informed about system status?",
+      code: `<div class="loading-spinner">Loading...</div>`,
+      options: ["Match between system and real world", "User control and freedom", "Visibility of system status", "Error prevention"],
+      correctIndex: 2
+    }
+  ]
 };
 
 function DailyCodeBite({ bootcampRegs }: { bootcampRegs: any[] }) {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [verified, setVerified] = useState(false);
   const [error, setError] = useState(false);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [streak, setStreak] = useState(() => {
     const saved = typeof window !== "undefined" ? localStorage.getItem("okike_streak") : null;
-    return saved ? parseInt(saved, 10) : 4;
+    return saved ? parseInt(saved, 10) : 0;
   });
   const [xp, setXp] = useState(() => {
     const saved = typeof window !== "undefined" ? localStorage.getItem("okike_xp") : null;
-    return saved ? parseInt(saved, 10) : 120;
+    return saved ? parseInt(saved, 10) : 0;
   });
 
   // Pick first registration course or default to Frontend Web
@@ -660,7 +915,17 @@ function DailyCodeBite({ bootcampRegs }: { bootcampRegs: any[] }) {
     matchedTrack = "Frontend Web";
   }
 
-  const challenge = CHALLENGES[matchedTrack] || CHALLENGES["Frontend Web"];
+  const trackChallenges = CHALLENGES[matchedTrack] || CHALLENGES["Frontend Web"];
+  
+  // Use the current day of the year to cycle through the challenges
+  const today = new Date();
+  const start = new Date(today.getFullYear(), 0, 0);
+  const diff = today.getTime() - start.getTime();
+  const oneDay = 1000 * 60 * 60 * 24;
+  const dayOfYear = Math.floor(diff / oneDay);
+  
+  const challengeIndex = (dayOfYear + currentQuestionIndex) % trackChallenges.length;
+  const challenge = trackChallenges[challengeIndex];
 
   function handleVerify() {
     if (selectedOption === challenge.correctIndex) {
@@ -739,16 +1004,17 @@ function DailyCodeBite({ bootcampRegs }: { bootcampRegs: any[] }) {
         </div>
       ) : (
         <div className="p-4 bg-emerald-500/10 ring-1 ring-emerald-500/20 text-emerald-600 rounded-xl text-xs font-semibold flex items-center justify-between">
-          <span>✓ Challenge completed! Check back tomorrow for a new code challenge.</span>
+          <span>✓ Challenge completed! Keep your streak going.</span>
           <button
             type="button"
             onClick={() => {
               setVerified(false);
               setSelectedOption(null);
+              setCurrentQuestionIndex(prev => prev + 1);
             }}
-            className="text-[10px] uppercase tracking-wider text-brand hover:underline font-bold cursor-pointer"
+            className="text-[10px] uppercase tracking-wider text-brand hover:bg-brand/10 px-2 py-1.5 rounded-lg font-bold transition cursor-pointer"
           >
-            Reset
+            Next Question
         </button>
       </div>
     )}
