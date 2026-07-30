@@ -12,6 +12,7 @@ import {
   enrollmentAdminEmail,
   enrollmentClientEmail,
   passwordChangedEmail,
+  directMessageEmail,
 } from "@/lib/email";
 
 // ─── Project inquiry ──────────────────────────────────────────────────────────
@@ -591,3 +592,32 @@ export const approveVerification = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+const directMessageSchema = z.object({
+  studentEmail: z.string().email(),
+  studentName: z.string().min(1),
+  senderName: z.string().min(1),
+  senderRole: z.string().optional(),
+  subject: z.string().min(1).max(200),
+  message: z.string().min(1).max(5000),
+});
+
+export const sendDirectMessage = createServerFn({ method: "POST" })
+  .inputValidator((data) => directMessageSchema.parse(data))
+  .handler(async ({ data }) => {
+    try {
+      await sendEmail({
+        ...directMessageEmail({
+          studentName: data.studentName,
+          senderName: data.senderName,
+          senderRole: data.senderRole,
+          subject: data.subject,
+          message: data.message,
+        }),
+        to: data.studentEmail,
+      });
+      return { ok: true as const };
+    } catch (err: any) {
+      console.error("Failed to send direct message email", err);
+      return { ok: false as const, error: err.message };
+    }
+  });

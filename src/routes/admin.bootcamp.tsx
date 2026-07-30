@@ -40,7 +40,9 @@ function AdminBootcampPage() {
   const [selectedProgress, setSelectedProgress] = useState<any | null>(null);
   const [milestonesUpdate, setMilestonesUpdate] = useState<Record<string, string>>({});
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [courseFilter, setCourseFilter] = useState<string>("All");
   const verifyFn = useServerFn(approveVerification);
+
 
   function toggleSelect(id: string) {
     setSelectedIds((prev) =>
@@ -132,10 +134,17 @@ function AdminBootcampPage() {
     }
   }
 
-  const total = rows.length;
-  const deptStudents = rows.filter((r) => r.payment_status === "free").length;
-  const paidCount = rows.filter((r) => r.payment_status === "paid").length;
-  const pendingCount = rows.filter((r) => r.payment_status === "pending").length;
+  const filteredRegistrations = rows.filter(r => {
+    if (courseFilter === "All") return true;
+    return r.course === courseFilter;
+  });
+
+  const total = filteredRegistrations.length;
+  const deptStudents = filteredRegistrations.filter((r) => r.payment_status === "free").length;
+  const paidCount = filteredRegistrations.filter((r) => r.payment_status === "paid").length;
+  const pendingCount = filteredRegistrations.filter((r) => r.payment_status === "pending").length;
+
+  const uniqueCourses = Array.from(new Set(rows.map(r => r.course).filter(Boolean))) as string[];
 
   return (
     <div className="flex flex-col gap-5">
@@ -148,26 +157,41 @@ function AdminBootcampPage() {
         </div>
 
         {/* Tab switch */}
-        <div className="flex gap-1 bg-surface p-1 rounded-xl ring-1 ring-ink/10">
-          <button
-            onClick={() => setActiveTab("registrations")}
-            className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-lg transition ${
-              activeTab === "registrations" ? "bg-brand text-brand-foreground shadow" : "text-ink/60 hover:text-ink"
-            }`}
-          >
-            Registrations
-          </button>
-          <button
-            onClick={() => {
-              setActiveTab("instructor");
-              loadProgress();
-            }}
-            className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-lg transition ${
-              activeTab === "instructor" ? "bg-brand text-brand-foreground shadow" : "text-ink/60 hover:text-ink"
-            }`}
-          >
-            Instructor Control
-          </button>
+        <div className="flex gap-4 items-center">
+          {activeTab === "registrations" && uniqueCourses.length > 0 && (
+            <select
+              value={courseFilter}
+              onChange={(e) => setCourseFilter(e.target.value)}
+              className="bg-surface ring-1 ring-ink/10 rounded-xl px-3 py-2 text-xs font-semibold text-ink focus:outline-none"
+            >
+              <option value="All">All Courses</option>
+              {uniqueCourses.map(c => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          )}
+
+          <div className="flex gap-1 bg-surface p-1 rounded-xl ring-1 ring-ink/10">
+            <button
+              onClick={() => setActiveTab("registrations")}
+              className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-lg transition ${
+                activeTab === "registrations" ? "bg-brand text-brand-foreground shadow" : "text-ink/60 hover:text-ink"
+              }`}
+            >
+              Registrations
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab("instructor");
+                loadProgress();
+              }}
+              className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-lg transition ${
+                activeTab === "instructor" ? "bg-brand text-brand-foreground shadow" : "text-ink/60 hover:text-ink"
+              }`}
+            >
+              Instructor Control
+            </button>
+          </div>
         </div>
       </div>
 
@@ -202,7 +226,7 @@ function AdminBootcampPage() {
                     <th className="px-4 py-4 w-10 text-center">
                       <input
                         type="checkbox"
-                        checked={rows.length > 0 && selectedIds.length === rows.length}
+                        checked={filteredRegistrations.length > 0 && selectedIds.length === filteredRegistrations.length}
                         onChange={toggleSelectAll}
                         className="rounded border-ink/20 text-brand focus:ring-brand cursor-pointer size-4"
                       />
@@ -221,14 +245,14 @@ function AdminBootcampPage() {
                         Loading registrations...
                       </td>
                     </tr>
-                  ) : rows.length === 0 ? (
+                  ) : filteredRegistrations.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="px-6 py-12 text-center text-ink/40">
-                        No registrations found.
+                        No registrations found for this filter.
                       </td>
                     </tr>
                   ) : (
-                    rows.map((r) => (
+                    filteredRegistrations.map((r) => (
                       <tr key={r.id} className="hover:bg-ink/5 transition">
                         <td className="px-4 py-4 w-10 text-center">
                           <input

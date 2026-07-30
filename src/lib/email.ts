@@ -366,3 +366,32 @@ export function passwordChangedEmail(): EmailPayload {
     `),
   };
 }
+
+export function directMessageEmail(data: {
+  studentName: string;
+  senderName: string;
+  senderRole?: string;
+  subject: string;
+  message: string;
+}): EmailPayload {
+  const firstName = data.studentName.split(" ")[0] || "Student";
+  const roleText = data.senderRole ? ` (${data.senderRole})` : "";
+  
+  // Convert newlines in message to <br/> tags for simple formatting
+  const formattedMessage = data.message.replace(/\n/g, "<br/>");
+
+  return {
+    to: "",
+    subject: data.subject,
+    html: baseTemplate(`
+      <p style="font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#E0EB32;margin:0 0 8px;">Direct Message</p>
+      ${h1(data.subject)}
+      ${para(`Hello ${firstName},`)}
+      ${infoCard([
+        `<p style="font-size:14px;color:#333;margin:0;line-height:1.6;">${formattedMessage}</p>`
+      ])}
+      ${para(`Best regards,<br/><strong style="color:#111;">${data.senderName}</strong>${roleText}`)}
+      ${ctaButton("View Dashboard", "https://okikeenterprises.com/dashboard")}
+    `),
+  };
+}

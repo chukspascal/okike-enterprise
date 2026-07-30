@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Users, Search, GraduationCap, Award, CheckCircle, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
+import { useServerFn } from "@tanstack/react-start";
+import { sendDirectMessage } from "@/lib/forms.functions";
+
 
 export const Route = createFileRoute("/instructor/students")({
   component: InstructorStudentsPage,
@@ -29,6 +32,13 @@ function InstructorStudentsPage() {
   const [milestonesUpdate, setMilestonesUpdate] = useState<Record<string, string>>({});
   const [lessonsUpdate, setLessonsUpdate] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  
+  // Email state
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const sendEmailFn = useServerFn(sendDirectMessage);
+
 
   async function loadProgress() {
     try {
@@ -139,6 +149,36 @@ function InstructorStudentsPage() {
       loadProgress();
     } else {
       toast.error("Could not save records. Please try again.");
+    }
+  }
+
+  async function handleSendEmail() {
+    if (!selectedProgress || !emailSubject.trim() || !emailMessage.trim()) return;
+    setIsSendingEmail(true);
+    
+    try {
+      const res = await sendEmailFn({
+        data: {
+          studentEmail: selectedProgress.student_email,
+          studentName: selectedProgress.student_email.split("@")[0], // Fallback name
+          senderName: user?.user_metadata?.full_name || "OKIKE Instructor",
+          senderRole: role === "admin" ? "Admin" : "Instructor",
+          subject: emailSubject,
+          message: emailMessage,
+        }
+      });
+      
+      if (res.ok) {
+        toast.success("Message sent to student successfully!");
+        setEmailSubject("");
+        setEmailMessage("");
+      } else {
+        toast.error(res.error || "Failed to send message.");
+      }
+    } catch (err: any) {
+      toast.error("An error occurred while sending the message.");
+    } finally {
+      setIsSendingEmail(false);
     }
   }
 
@@ -354,7 +394,35 @@ function InstructorStudentsPage() {
                   onClick={() => setSelectedProgress(null)}
                   className="px-4 py-2.5 rounded-xl bg-surface ring-1 ring-ink/10 text-xs font-semibold uppercase tracking-wider hover:bg-ink/5"
                 >
-                  Cancel
+                  Close
+                </button>
+              </div>
+
+              {/* Direct Message Section */}
+              <div className="mt-4 pt-4 border-t border-ink/5 flex flex-col gap-3">
+                <div className="text-xs font-semibold text-ink flex items-center gap-1">
+                  Send Direct Message
+                </div>
+                <input
+                  type="text"
+                  placeholder="Subject"
+                  value={emailSubject}
+                  onChange={(e) => setEmailSubject(e.target.value)}
+                  className="w-full bg-surface ring-1 ring-ink/10 rounded-xl px-3 py-2 text-xs text-ink focus:outline-none focus:ring-brand"
+                />
+                <textarea
+                  placeholder="Type your message here..."
+                  value={emailMessage}
+                  onChange={(e) => setEmailMessage(e.target.value)}
+                  rows={4}
+                  className="w-full bg-surface ring-1 ring-ink/10 rounded-xl px-3 py-2 text-xs text-ink focus:outline-none focus:ring-brand resize-none"
+                />
+                <button
+                  onClick={handleSendEmail}
+                  disabled={isSendingEmail || !emailSubject.trim() || !emailMessage.trim()}
+                  className="w-full px-4 py-2.5 rounded-xl bg-ink text-surface font-semibold text-xs uppercase tracking-wider hover:opacity-90 transition disabled:opacity-50"
+                >
+                  {isSendingEmail ? "Sending..." : "Send Message via Email"}
                 </button>
               </div>
             </div>
