@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, GraduationCap, Calendar, CreditCard, Award, CheckCircle, Clock, BookOpen, Trash2 } from "lucide-react";
+import { Users, GraduationCap, Calendar, CreditCard, Award, CheckCircle, Clock, BookOpen, Trash2, Mail } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
-import { approveVerification } from "@/lib/forms.functions";
+import { approveVerification, sendBulkMessage } from "@/lib/forms.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/bootcamp")({
@@ -41,7 +42,13 @@ function AdminBootcampPage() {
   const [milestonesUpdate, setMilestonesUpdate] = useState<Record<string, string>>({});
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [courseFilter, setCourseFilter] = useState<string>("All");
+  const [isMessaging, setIsMessaging] = useState(false);
+  const [msgSubject, setMsgSubject] = useState("");
+  const [msgBody, setMsgBody] = useState("");
+
   const verifyFn = useServerFn(approveVerification);
+  const sendBulkEmailFn = useServerFn(sendBulkMessage);
+  const { user, role } = useAuth();
 
 
   function toggleSelect(id: string) {
@@ -205,16 +212,24 @@ function AdminBootcampPage() {
           </div>
 
           {selectedIds.length > 0 && (
-            <div className="flex items-center justify-between bg-red-500/10 border border-red-500/20 rounded-2xl p-4 mt-3 transition-all">
-              <span className="text-sm font-medium text-red-600 dark:text-red-400 flex items-center gap-2">
-                <Trash2 className="size-4" /> {selectedIds.length} registration{selectedIds.length > 1 ? "s" : ""} selected
+            <div className="flex items-center justify-between bg-surface border border-ink/10 rounded-2xl p-4 mt-3 transition-all shadow-sm">
+              <span className="text-sm font-medium text-ink flex items-center gap-2">
+                <CheckCircle className="size-4 text-brand" /> {selectedIds.length} registration{selectedIds.length > 1 ? "s" : ""} selected
               </span>
-              <button
-                onClick={deleteSelected}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition"
-              >
-                Delete Selected
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setIsMessaging(true)}
+                  className="bg-brand hover:bg-brand/90 text-brand-foreground px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition flex items-center gap-2 shadow-sm"
+                >
+                  <Mail className="size-4" /> Message Selected
+                </button>
+                <button
+                  onClick={deleteSelected}
+                  className="bg-red-600/10 hover:bg-red-600/20 text-red-600 px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition flex items-center gap-2"
+                >
+                  <Trash2 className="size-4" /> Delete
+                </button>
+              </div>
             </div>
           )}
 
@@ -473,6 +488,92 @@ function AdminBootcampPage() {
               Select a student to edit milestones
             </div>
           )}
+        </div>
+      )}
+
+      {isMessaging && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60"
+          onClick={() => setIsMessaging(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-card ring-1 ring-border rounded-2xl max-w-lg w-full p-6 animate-in fade-in zoom-in-95 duration-200"
+          >
+            <h2 className="text-lg font-bold flex items-center gap-2 mb-2">
+              <Mail className="size-5 text-brand" /> Send Bulk Message
+            </h2>
+            <p className="text-sm text-ink/60 mb-5">
+              You are drafting an email to <strong>{selectedIds.length}</strong> selected student{selectedIds.length > 1 ? "s" : ""}.
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1">Subject</label>
+                <input
+                  type="text"
+                  value={msgSubject}
+                  onChange={(e) => setMsgSubject(e.target.value)}
+                  placeholder="e.g. Action Required: Complete your checkout"
+                  className="w-full bg-surface ring-1 ring-ink/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1">Message</label>
+                <textarea
+                  value={msgBody}
+                  onChange={(e) => setMsgBody(e.target.value)}
+                  placeholder="Type your message here..."
+                  className="w-full h-32 bg-surface ring-1 ring-ink/10 rounded-xl p-3 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-brand"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-ink/5">
+                <button
+                  onClick={() => setIsMessaging(false)}
+                  className="px-4 py-2 text-sm font-medium hover:bg-surface ring-1 ring-border rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    const loadingToast = toast.loading(`Sending emails to ${selectedIds.length} students...`);
+                    try {
+                      const recipients = rows
+                        .filter(r => selectedIds.includes(r.id))
+                        .map(r => ({ email: r.email, name: r.name }));
+
+                      const res = await sendBulkEmailFn({
+                        data: {
+                          recipients,
+                          senderName: user?.user_metadata?.full_name || "Admin",
+                          senderRole: role === "admin" ? "Admin" : "Instructor",
+                          subject: msgSubject,
+                          message: msgBody
+                        }
+                      });
+
+                      if (res.ok) {
+                        toast.success(`Successfully sent emails!`, { id: loadingToast });
+                        setIsMessaging(false);
+                        setMsgSubject("");
+                        setMsgBody("");
+                        setSelectedIds([]);
+                      } else {
+                        toast.error(res.error || "Failed to send to some or all", { id: loadingToast });
+                      }
+                    } catch (err) {
+                      toast.error("An error occurred while sending.", { id: loadingToast });
+                    }
+                  }}
+                  disabled={!msgSubject.trim() || !msgBody.trim()}
+                  className="px-4 py-2 text-sm font-medium bg-brand text-brand-foreground rounded-xl disabled:opacity-50"
+                >
+                  Send Emails
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

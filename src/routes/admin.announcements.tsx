@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Megaphone, Mail, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/use-auth";
+import { sendDirectMessage } from "@/lib/forms.functions";
+import { useServerFn } from "@tanstack/react-start";
 
 export const Route = createFileRoute("/admin/announcements")({
   component: AdminAnnouncements,
@@ -14,6 +17,11 @@ function AdminAnnouncements() {
   const [rows, setRows] = useState<Msg[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState<Msg | null>(null);
+  const [replyText, setReplyText] = useState("");
+  const [replying, setReplying] = useState(false);
+  
+  const { user, role } = useAuth();
+  const sendEmailFn = useServerFn(sendDirectMessage);
 
   async function load() {
     const { data } = await supabase
@@ -109,20 +117,76 @@ function AdminAnnouncements() {
               </span>
             </div>
             <p className="text-sm text-ink/80 mt-4 whitespace-pre-wrap">{open.message}</p>
-            <div className="mt-5 flex gap-2 justify-end">
-              <a
-                href={`mailto:${open.email}`}
-                className="rounded-xl bg-brand text-brand-foreground px-4 py-2 text-sm font-medium"
-              >
-                Reply
-              </a>
-              <button
-                onClick={() => setOpen(null)}
-                className="rounded-xl bg-foreground/5 ring-1 ring-border px-4 py-2 text-sm"
-              >
-                Close
-              </button>
-            </div>
+            
+            {!replying ? (
+              <div className="mt-5 flex gap-2 justify-end">
+                <button
+                  onClick={() => setReplying(true)}
+                  className="rounded-xl bg-brand text-brand-foreground px-4 py-2 text-sm font-medium"
+                >
+                  Reply in System
+                </button>
+                <a
+                  href={`mailto:${open.email}`}
+                  className="rounded-xl bg-foreground/10 text-ink px-4 py-2 text-sm font-medium hover:bg-foreground/15 flex items-center justify-center"
+                >
+                  Reply via App
+                </a>
+                <button
+                  onClick={() => setOpen(null)}
+                  className="rounded-xl bg-foreground/5 ring-1 ring-border px-4 py-2 text-sm font-medium hover:bg-foreground/10"
+                >
+                  Close
+                </button>
+              </div>
+            ) : (
+              <div className="mt-5 space-y-3 animate-in fade-in zoom-in-95 duration-200">
+                <textarea
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  placeholder={`Type your reply to ${open.name}...`}
+                  className="w-full h-32 rounded-xl bg-surface ring-1 ring-border p-3 text-sm resize-none focus:ring-brand focus:outline-none"
+                />
+                <div className="flex gap-2 justify-end">
+                  <button
+                    onClick={() => { setReplying(false); setReplyText(""); }}
+                    className="px-4 py-2 text-sm font-medium hover:bg-surface ring-1 ring-border rounded-xl"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={async () => {
+                      const loadingToast = toast.loading("Sending reply...");
+                      try {
+                        const res = await sendEmailFn({
+                          data: {
+                            studentEmail: open.email,
+                            studentName: open.name,
+                            senderName: user?.user_metadata?.full_name || "Admin",
+                            senderRole: role === "admin" ? "Admin" : "Instructor",
+                            subject: `Re: Your message to OKIKE`,
+                            message: replyText,
+                          }
+                        });
+                        if (res.ok) {
+                          toast.success("Reply sent successfully!", { id: loadingToast });
+                          setReplying(false);
+                          setReplyText("");
+                        } else {
+                          toast.error(res.error || "Failed to send", { id: loadingToast });
+                        }
+                      } catch (err) {
+                        toast.error("Failed to send reply", { id: loadingToast });
+                      }
+                    }}
+                    disabled={!replyText.trim()}
+                    className="px-4 py-2 text-sm font-medium bg-brand text-brand-foreground rounded-xl disabled:opacity-50"
+                  >
+                    Send Reply
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

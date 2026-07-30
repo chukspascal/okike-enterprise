@@ -637,3 +637,47 @@ export const sendDirectMessage = createServerFn({ method: "POST" })
       return { ok: false as const, error: err.message };
     }
   });
+
+const bulkMessageSchema = z.object({
+  recipients: z.array(z.object({
+    email: z.string().email(),
+    name: z.string().min(1),
+  })).min(1).max(100),
+  senderName: z.string().min(1),
+  senderRole: z.string().optional(),
+  subject: z.string().min(1).max(200),
+  message: z.string().min(1).max(5000),
+});
+
+export const sendBulkMessage = createServerFn({ method: "POST" })
+  .inputValidator((data) => bulkMessageSchema.parse(data))
+  .handler(async ({ data }) => {
+    try {
+      const results = await Promise.allSettled(
+        data.recipients.map(recipient => 
+          sendEmail({
+            ...directMessageEmail({
+              studentName: recipient.name,
+              senderName: data.senderName,
+              senderRole: data.senderRole,
+              subject: data.subject,
+              message: data.message,
+            }),
+            to: recipient.email,
+          })
+        )
+      );
+
+      const failedCount = results.filter(r => r.status === "rejected").length;
+      
+      if (failedCount === data.recipients.length) {
+        return { ok: false as const, error: "Failed to send to all recipients" };
+      }
+
+      return { ok: true as const, failedCount };
+    } catch (err: any) {
+      console.error("Failed to send bulk messages", err);
+      return { ok: false as const, error: err.message };
+    }
+  });
+
