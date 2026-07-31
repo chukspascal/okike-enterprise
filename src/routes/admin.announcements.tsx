@@ -169,6 +169,11 @@ function AdminAnnouncements() {
                           }
                         });
                         if (res.ok) {
+                          await supabase.from("contact_messages").insert({
+                            name: "OKIKE Support",
+                            email: open.email,
+                            message: replyText
+                          });
                           toast.success("Reply sent successfully!", { id: loadingToast });
                           setReplying(false);
                           setReplyText("");

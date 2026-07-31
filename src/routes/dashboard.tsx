@@ -4318,6 +4318,83 @@ function SupportChatConsole({
   ]);
   const [text, setText] = useState("");
   const [typing, setTyping] = useState(false);
+  const endRef = useRef<HTMLDivElement>(null);
+
+  async function loadMessages() {
+    if (!clientEmail) return;
+    const { data } = await supabase
+      .from("contact_messages")
+      .select("id, name, email, message, created_at")
+      .eq("email", clientEmail)
+      .order("created_at", { ascending: true });
+    
+    if (data && data.length > 0) {
+      const formatted = data.map((m) => {
+        let sender = "user";
+        let text = m.message;
+        if (m.name === "OKIKE Support") {
+          sender = "support";
+        } else if (text.startsWith("[Dashboard Support Ticket]: ")) {
+          text = text.replace("[Dashboard Support Ticket]: ", "");
+        }
+        return {
+          id: m.id,
+          sender,
+          text,
+          time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+      });
+      setMessages([
+        {
+          id: "init-msg",
+          sender: "support",
+          text: `Hello ${clientName}! Welcome to OKIKE Support. How can we help you with your projects or academy learning today?`,
+          time: new Date(Date.now() - 600000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        },
+        ...formatted
+      ]);
+      setTimeout(() => endRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+    }
+  }
+
+  useEffect(() => {
+    loadMessages();
+    
+    const channel = supabase
+      .channel("support-chat")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "contact_messages", filter: `email=eq.${clientEmail}` }, (payload) => {
+        const m = payload.new as any;
+        let sender = m.name === "OKIKE Support" ? "support" : "user";
+        let text = m.message;
+        if (text.startsWith("[Dashboard Support Ticket]: ")) {
+          text = text.replace("[Dashboard Support Ticket]: ", "");
+        }
+        
+        // Prevent adding our own optimistic updates again if they match, though we don't optimistically set ID.
+        // For simplicity we just reload all to get consistent IDs or we just append.
+        // If it's a support reply, show toast!
+        if (sender === "support") {
+          toast.info("New message from OKIKE Support", { icon: "💬" });
+          setTyping(false);
+        }
+        
+        setMessages((prev) => {
+          if (prev.find(x => x.id === m.id)) return prev;
+          return [...prev, {
+            id: m.id,
+            sender,
+            text,
+            time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }];
+        });
+        setTimeout(() => endRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+      })
+      .subscribe();
+      
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [clientEmail]);
 
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
@@ -4326,16 +4403,17 @@ function SupportChatConsole({
     const userText = text.trim();
     setText("");
 
-    // Push client message
+    // Optimistic UI
+    const tempId = Math.random().toString();
     const userMsg = {
-      id: Math.random().toString(),
+      id: tempId,
       sender: "user",
       text: userText,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
     setMessages(prev => [...prev, userMsg]);
+    setTimeout(() => endRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
 
-    // Send to contact_messages in Supabase so managers get it!
     try {
       await supabase
         .from("contact_messages")
@@ -4347,20 +4425,6 @@ function SupportChatConsole({
     } catch (err) {
       console.error("Support sync error:", err);
     }
-
-    // Trigger typing response
-    setTyping(true);
-    setTimeout(() => {
-      setTyping(false);
-      const ticketId = Math.floor(1000 + Math.random() * 9000);
-      const supportReply = {
-        id: Math.random().toString(),
-        sender: "support",
-        text: `Thank you! Your message has been received by our lead developers. We have generated Support Ticket #${ticketId}. We usually reply within 10 minutes.`,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages(prev => [...prev, supportReply]);
-    }, 1500);
   }
 
   return (
@@ -4394,11 +4458,14 @@ function SupportChatConsole({
         ))}
         {typing && (
           <div className="flex justify-start">
-            <div className="bg-surface ring-1 ring-ink/10 rounded-2xl px-4 py-2.5 text-xs flex items-center gap-2 text-ink/50 font-medium">
-              <Loader2 className="size-3 animate-spin text-brand" /> Developer team is typing…
+            <div className="bg-surface ring-1 ring-border text-ink px-4 py-3 rounded-2xl rounded-tl-sm flex items-center gap-1.5 shadow-sm">
+              <div className="w-2 h-2 rounded-full bg-ink/40 animate-bounce" />
+              <div className="w-2 h-2 rounded-full bg-ink/40 animate-bounce delay-75" />
+              <div className="w-2 h-2 rounded-full bg-ink/40 animate-bounce delay-150" />
             </div>
           </div>
         )}
+        <div ref={endRef} />
       </div>
 
       <form onSubmit={handleSend} className="p-4 border-t border-ink/10 flex gap-2">

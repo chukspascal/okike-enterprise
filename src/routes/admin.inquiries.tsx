@@ -49,7 +49,8 @@ function InquiriesPage() {
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-medium">Inquiries</h1>
       <div className="bg-card rounded-2xl ring-1 ring-ink/5 overflow-hidden">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
           <thead className="bg-surface text-xs uppercase tracking-wider text-ink/40">
             <tr>
               <th className="text-left px-4 py-3">Client</th>
@@ -91,6 +92,7 @@ function InquiriesPage() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {open && (

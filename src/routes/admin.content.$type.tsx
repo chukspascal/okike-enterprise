@@ -459,7 +459,8 @@ function ContentPage() {
       </div>
 
       <div className="bg-card rounded-2xl ring-1 ring-ink/5 overflow-hidden">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
           <thead className="bg-surface text-xs uppercase tracking-wider text-ink/40">
             <tr>
               {cfg.columns?.map((col) => (
@@ -507,6 +508,7 @@ function ContentPage() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {editing && (
