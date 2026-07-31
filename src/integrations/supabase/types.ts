@@ -8,6 +8,57 @@ export type Database = {
   };
   public: {
     Tables: {
+      ai_conversations: {
+        Row: {
+          id: string;
+          user_id: string;
+          role: "user" | "assistant" | "system" | "tool";
+          content: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          role: "user" | "assistant" | "system" | "tool";
+          content?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          role?: "user" | "assistant" | "system" | "tool";
+          content?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      push_subscriptions: {
+        Row: {
+          id: string;
+          user_id: string;
+          endpoint: string;
+          p256dh: string;
+          auth: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          endpoint: string;
+          p256dh: string;
+          auth: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          endpoint?: string;
+          p256dh?: string;
+          auth?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       addons: {
         Row: {
           created_at: string;

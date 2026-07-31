@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
 import { useServerFn } from "@tanstack/react-start";
-import { askAssistant, generateInsights } from "@/lib/ai-assistant.functions";
+import { askAssistant, generateInsights, getAiConversations, saveAiMessage } from "@/lib/ai-assistant.functions";
+import { savePushSubscription } from "@/lib/push.functions";
 import { toast } from "sonner";
 import { verifyProjectDeposit, verifyBootcampPayment, updateBootcampPaymentReference, sendPasswordChangedEmail } from "@/lib/forms.functions";
 import { getBootcampCoursePrice } from "@/lib/utils";
@@ -484,7 +485,7 @@ function DashboardPage() {
                             </div>
                             <p className="text-ink/85 leading-relaxed font-sans pr-10">{up.message}</p>
 
-                            <div className="absolute right-2 top-2 bottom-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity justify-center">
+                            <div className="absolute right-2 top-2 bottom-2 flex flex-col gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity justify-center">
                               {!isRead && (
                                 <button
                                   title="Mark as read"
@@ -1953,7 +1954,7 @@ function MilestonesView({
 
 /* ---------------- AI ---------------- */
 
-type ChatMsg = { role: "user" | "assistant"; content: string };
+type ChatMsg = { role: "user" | "assistant" | "tool" | "system"; content?: string | null; tool_calls?: any[]; tool_call_id?: string; name?: string };
 
 function AIView({
   firstName,
@@ -1967,6 +1968,10 @@ function AIView({
   updates: Update[];
 }) {
   const ask = useServerFn(askAssistant);
+  const getHistory = useServerFn(getAiConversations);
+  const saveMsg = useServerFn(saveAiMessage);
+  const navigate = useNavigate();
+
   const [messages, setMessages] = useState<ChatMsg[]>([
     {
       role: "assistant",
@@ -1975,7 +1980,24 @@ function AIView({
   ]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    async function loadMemory() {
+      try {
+        const res = await getHistory();
+        if (res.ok && res.messages && res.messages.length > 0) {
+          setMessages(res.messages as any as ChatMsg[]);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoaded(true);
+      }
+    }
+    loadMemory();
+  }, []);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -1984,11 +2006,16 @@ function AIView({
   async function send(text?: string) {
     const content = (text ?? input).trim();
     if (!content || busy) return;
-    const next = [...messages, { role: "user" as const, content }];
+    
+    const userMsg: ChatMsg = { role: "user", content };
+    const next = [...messages, userMsg];
     setMessages(next);
     setInput("");
     setBusy(true);
+
     try {
+      await saveMsg({ data: { role: "user", content } });
+
       const res = await ask({
         data: {
           messages: next,
@@ -1996,7 +2023,14 @@ function AIView({
         },
       });
       if (res.ok) {
-        setMessages([...next, { role: "assistant", content: res.text }]);
+        if (res.tool_calls) {
+          const aiMsg: ChatMsg = { role: "assistant", tool_calls: res.tool_calls };
+          setMessages([...next, aiMsg]);
+        } else {
+          const aiMsg: ChatMsg = { role: "assistant", content: res.text };
+          setMessages([...next, aiMsg]);
+          await saveMsg({ data: { role: "assistant", content: res.text } });
+        }
       } else {
         toast.error(res.error);
       }
@@ -2009,8 +2043,8 @@ function AIView({
 
   const suggestions = [
     "Summarize the status of my projects",
-    "Suggest next steps for an MVP",
-    "Explain milestone planning",
+    "Draft a new project for me",
+    "I want to register for a bootcamp course",
   ];
 
   return (
@@ -2020,19 +2054,64 @@ function AIView({
         <h2 className="font-semibold">OKIKE AI Assistant</h2>
       </div>
       <div className="flex-1 overflow-y-auto p-5 space-y-4">
-        {messages.map((m, i) => (
-          <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div
-              className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap ${m.role === "user" ? "bg-brand text-brand-foreground" : "bg-secondary ring-1 ring-ink/10"}`}
-            >
-              {m.content}
-            </div>
+        {!loaded ? (
+          <div className="flex justify-center p-4">
+            <Loader2 className="size-5 animate-spin text-ink/40" />
           </div>
-        ))}
+        ) : (
+          messages.map((m, i) => (
+            <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"} flex-col gap-2`}>
+              {m.content && (
+                <div className={`self-${m.role === "user" ? "end" : "start"} max-w-[80%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap ${m.role === "user" ? "bg-brand text-brand-foreground" : "bg-secondary ring-1 ring-ink/10"}`}>
+                  {m.content}
+                </div>
+              )}
+              {m.tool_calls?.map((tc: any, j) => {
+                if (tc.function.name === "draft_project") {
+                  const args = JSON.parse(tc.function.arguments);
+                  return (
+                    <div key={j} className="self-start max-w-[80%] bg-surface border border-ink/10 rounded-xl p-4 space-y-2">
+                      <div className="text-xs font-bold uppercase text-brand tracking-wider">Project Draft Generated</div>
+                      <h4 className="font-semibold">{args.title}</h4>
+                      <p className="text-xs text-ink/80">{args.description}</p>
+                      <button 
+                        onClick={() => {
+                          toast.success("Redirecting to project creator...");
+                          navigate({ to: "/book" });
+                        }}
+                        className="mt-2 w-full bg-brand text-brand-foreground text-xs font-bold py-2 rounded-lg"
+                      >
+                        Confirm & Create Project
+                      </button>
+                    </div>
+                  );
+                }
+                if (tc.function.name === "register_course") {
+                  return (
+                    <div key={j} className="self-start max-w-[80%] bg-surface border border-ink/10 rounded-xl p-4 space-y-2">
+                      <div className="text-xs font-bold uppercase text-brand tracking-wider">Course Registration Drafted</div>
+                      <p className="text-xs text-ink/80">I have prepared your bootcamp registration.</p>
+                      <button 
+                        onClick={() => {
+                          toast.success("Redirecting to registration portal...");
+                          navigate({ to: "/bootcamp" });
+                        }}
+                        className="mt-2 w-full bg-brand text-brand-foreground text-xs font-bold py-2 rounded-lg"
+                      >
+                        Confirm Registration
+                      </button>
+                    </div>
+                  );
+                }
+                return null;
+              })}
+            </div>
+          ))
+        )}
         {busy && (
           <div className="flex justify-start">
             <div className="bg-secondary ring-1 ring-ink/10 rounded-2xl px-4 py-2.5 text-sm flex items-center gap-2 text-ink/60">
-              <Loader2 className="size-3.5 animate-spin" /> Thinking…
+              <Loader2 className="size-3.5 animate-spin" /> Thinking...
             </div>
           </div>
         )}
@@ -3461,10 +3540,47 @@ function SettingsView({
   const [preferredCurrency, setPreferredCurrency] = useState(user?.user_metadata?.preferred_currency || "NGN");
 
   // Notification states
-  const [notifyClasses, setNotifyClasses] = useState(user?.user_metadata?.notify_classes ?? true);
-  const [notifyAssignments, setNotifyAssignments] = useState(user?.user_metadata?.notify_assignments ?? true);
-  const [notifyMilestones, setNotifyMilestones] = useState(user?.user_metadata?.notify_milestones ?? true);
-  const [notifyBilling, setNotifyBilling] = useState(user?.user_metadata?.notify_billing ?? true);
+  const savePushSub = useServerFn(savePushSubscription);
+  const [notifyClasses, setNotifyClasses] = useState(true);
+  const [notifyAssignments, setNotifyAssignments] = useState(true);
+  const [notifyMilestones, setNotifyMilestones] = useState(true);
+  const [notifyReplies, setNotifyReplies] = useState(true);
+  const [notifyBilling, setNotifyBilling] = useState(true);
+  const [pushEnabled, setPushEnabled] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      setPushEnabled(Notification.permission === "granted");
+    }
+  }, []);
+
+  async function handleEnablePush() {
+    if (!("Notification" in window) || !("serviceWorker" in navigator)) {
+      toast.error("Push notifications are not supported by your browser.");
+      return;
+    }
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission === "granted") {
+        setPushEnabled(true);
+        const registration = await navigator.serviceWorker.ready;
+        let subscription = await registration.pushManager.getSubscription();
+        if (!subscription) {
+          const publicVapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+          subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: publicVapidKey,
+          });
+        }
+        await savePushSub({ data: { userId: user?.id || "", subscription } });
+        toast.success("Push notifications enabled!");
+      } else {
+        toast.error("Permission denied for push notifications.");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to enable push notifications.");
+    }
+  }
 
   // Security states
   const [newPassword, setNewPassword] = useState("");
@@ -3831,9 +3947,30 @@ function SettingsView({
                       </div>
                     </label>
                   ))}
-                </div>
+                    
+                    {/* Push Notifications (PWA) Toggle */}
+                    <div className="flex items-center justify-between p-4 rounded-xl border border-ink/10 bg-surface/50">
+                      <div className="flex flex-col gap-1 pr-4">
+                        <span className="font-semibold text-sm text-ink">Background Push Notifications (PWA)</span>
+                        <span className="text-xs text-ink/60">Receive alerts even when the app is closed. Requires browser permission.</span>
+                      </div>
+                      {pushEnabled ? (
+                        <div className="text-xs font-bold text-brand flex items-center gap-1">
+                          <CheckCircle2 className="size-4" /> Enabled
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={handleEnablePush}
+                          className="shrink-0 px-4 py-2 bg-brand/10 text-brand rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-brand/20 transition"
+                        >
+                          Enable
+                        </button>
+                      )}
+                    </div>
+                  </div>
 
-                <button
+                  <button
                   type="submit"
                   disabled={busy}
                   className="w-full bg-brand text-brand-foreground py-3 font-semibold text-xs uppercase tracking-widest hover:opacity-90 disabled:opacity-50 transition rounded-xl cursor-pointer"
@@ -3973,7 +4110,7 @@ function AIInsightsCard({
         updates,
       },
     })
-      .then((result) => {
+      .then((result: any) => {
         if (aborted) return;
         clearTimeout(timeoutId);
         if (result.ok) {

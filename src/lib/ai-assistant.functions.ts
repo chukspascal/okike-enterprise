@@ -3,8 +3,11 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const MessageSchema = z.object({
-  role: z.enum(["user", "assistant", "system"]),
-  content: z.string().min(1).max(8000),
+  role: z.enum(["user", "assistant", "system", "tool"]),
+  content: z.string().nullable().optional(),
+  name: z.string().optional(),
+  tool_calls: z.array(z.any()).optional(),
+  tool_call_id: z.string().optional(),
 });
 
 type Project = {
@@ -125,32 +128,63 @@ export const askAssistant = createServerFn({ method: "POST" })
       console.error("Failed to load RAG syllabus context for AI assistant", err);
     }
 
-    const system =
-      data.system ??
-      `You are OKIKE AI — a concise, helpful assistant inside the OKIKE client dashboard. Answer in 1-3 short paragraphs. Be practical.
+    let systemPrompt =
+        data.system ||
+        `You are OKIKE AI, the intelligent assistant for OKIKE Enterprise. 
+OKIKE is a Nigerian software studio & tech academy founded in 2023. We build world-class digital products and train the next generation of African engineers.
+The founder is Chukwuma Pascal Chukwuemeka, hailing from Igbo Eze North LGA, Enugu State, Nigeria.
 
-You have access to the user's project data, milestones, and updates. When the user asks about their projects, you can reference this information. You can help summarize their progress, suggest next steps, and answer questions about their work.
+You can help users navigate their projects, understand their syllabus, and draft new project scopes or register for courses using the tools provided.
+Always be polite, encouraging, and professional. You have access to real-time data about the user's projects and syllabus.
+`;
+      systemPrompt += projectContext + lmsContext;
 
-If the user asks to create a project, tell them to click the "Start a project" button or go to /book.
-
-For bootcamp students (Computing Synergy Summit commencing August 1, 2026):
-- They can register for multiple tracks.
-- CS/IT department students (Computer Science, Information Technology, Software Engineering, Cyber Security) get free admission by entering a valid, unique registration number containing 'CSC'.
-- Non-department students pay a registration fee of ₦5,000.
-- They have access to syllabus modules, roadmap milestones, live night sessions, downloadable materials, quizzes, and assignments for all registered course tracks in their dashboard.${projectContext}${lmsContext}`;
+      const tools = [
+        {
+          type: "function",
+          function: {
+            name: "draft_project",
+            description: "Draft a new project for the user.",
+            parameters: {
+              type: "object",
+              properties: {
+                title: { type: "string" },
+                description: { type: "string" },
+                package_name: { type: "string" },
+              },
+              required: ["title", "description", "package_name"],
+            }
+          }
+        },
+        {
+          type: "function",
+          function: {
+            name: "register_course",
+            description: "Draft a bootcamp registration for the user.",
+            parameters: {
+              type: "object",
+              properties: {
+                course_id: { type: "string" },
+              },
+              required: ["course_id"],
+            }
+          }
+        }
+      ];
 
     try {
       const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${apiKey}`,
+          "HTTP-Referer": "https://okike-enterprise.com",
+          "X-Title": "OKIKE Dashboard",
           "Content-Type": "application/json",
-          "HTTP-Referer": "https://okike.ai",
-          "X-Title": "OKIKE AI Assistant",
         },
         body: JSON.stringify({
           model: data.model || "openai/gpt-4o-mini",
-          messages: [{ role: "system", content: system }, ...data.messages],
+          messages: [{ role: "system", content: systemPrompt }, ...data.messages],
+          tools,
         }),
       });
 
@@ -169,8 +203,14 @@ For bootcamp students (Computing Synergy Summit commencing August 1, 2026):
         };
       }
       const json = await res.json();
-      const text: string = json?.choices?.[0]?.message?.content ?? "";
-      return { ok: true as const, text };
+      const message = json?.choices?.[0]?.message;
+      
+      if (message?.tool_calls) {
+        return { ok: true as const, text: message.content || "", tool_calls: message.tool_calls, message: message };
+      }
+      
+      const text: string = message?.content ?? "";
+      return { ok: true as const, text, message };
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : "AI request failed.";
       return { ok: false as const, error: errorMessage };
@@ -671,4 +711,38 @@ Your response must be in JSON format:
       const msg = e instanceof Error ? e.message : "AI review failed.";
       return { ok: false as const, error: msg };
     }
+  });
+
+export const getAiConversations = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("ai_conversations")
+      .select("role, content")
+      .eq("user_id", context.claims!.sub)
+      .order("created_at", { ascending: true });
+    
+    if (error) return { ok: false as const, error: error.message };
+    return { ok: true as const, messages: data };
+  });
+
+export const saveAiMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({
+      role: z.enum(["user", "assistant"]),
+      content: z.string(),
+    }).parse(d)
+  )
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("ai_conversations")
+      .insert({
+        user_id: context.claims!.sub,
+        role: data.role,
+        content: data.content
+      });
+    
+    if (error) return { ok: false as const, error: error.message };
+    return { ok: true as const };
   });

@@ -46,6 +46,7 @@ export default defineConfig({
         navigateFallback: undefined,
         cleanupOutdatedCaches: true,
         clientsClaim: true,
+        importScripts: ["/push-sw.js"]
       },
       devOptions: {
         enabled: true

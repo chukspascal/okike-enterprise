@@ -22,7 +22,8 @@ type CmsTable =
   | "blog_posts"
   | "courses"
   | "tracks"
-  | "physical_classes";
+  | "physical_classes"
+  | "events";
 type ContentValue = string | number | boolean | string[] | null | undefined;
 type ContentRow = Record<string, ContentValue> & {
   id?: string;
@@ -416,7 +417,7 @@ function ContentPage() {
               onClick={async () => {
                 setPublishBusy(true);
                 try {
-                  const result = await publishAIPost({ data: {} });
+                  const result = await publishAIPost();
                   if (result.ok) {
                     toast.success(`Published: "${result.title}" · /${result.slug}`);
                     // Reload the list

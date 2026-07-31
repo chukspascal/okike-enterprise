@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { getBootcampCoursePrice } from "@/lib/utils";
+import { sendPushNotification } from "@/lib/push.functions";
 import {
   sendEmail,
   welcomeEmail,
@@ -631,6 +632,23 @@ export const sendDirectMessage = createServerFn({ method: "POST" })
         }),
         to: data.studentEmail,
       });
+
+      // Trigger Push Notification
+      const { data: profile } = await supabaseAdmin
+        .from("profiles")
+        .select("id")
+        .eq("email", data.studentEmail)
+        .single();
+        
+      if (profile) {
+        await sendPushNotification(
+          profile.id,
+          "New Support Reply",
+          `OKIKE Support: ${data.message.substring(0, 50)}...`,
+          "/dashboard?tab=messages"
+        );
+      }
+
       return { ok: true as const };
     } catch (err: any) {
       console.error("Failed to send direct message email", err);
