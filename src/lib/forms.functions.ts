@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { getBootcampCoursePrice } from "@/lib/utils";
-import { sendPushNotification } from "@/lib/push.functions";
+import { sendPushNotification } from "@/lib/push.server";
 import {
   sendEmail,
   welcomeEmail,
