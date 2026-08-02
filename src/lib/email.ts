@@ -46,6 +46,57 @@ export async function sendEmail(payload: EmailPayload): Promise<void> {
   }
 }
 
+export async function sendBatchEmails(payloads: EmailPayload[]): Promise<{ failedCount: number; error?: string }> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.warn("[email] RESEND_API_KEY not set — skipping batch emails");
+    return { failedCount: payloads.length, error: "API key not set" };
+  }
+
+  const bodies = payloads.map((payload) => {
+    const body: Record<string, unknown> = {
+      from: FROM,
+      to: Array.isArray(payload.to) ? payload.to : [payload.to],
+      subject: payload.subject,
+    };
+
+    if (payload.template_id) {
+      body.template_id = payload.template_id;
+      if (payload.data) body.data = payload.data;
+    } else {
+      body.html = payload.html;
+    }
+
+    return body;
+  });
+
+  const res = await fetch(`${RESEND_API_URL}/batch`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(bodies),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    console.error(`[email] Resend batch error (${res.status}):`, err);
+    return { failedCount: payloads.length, error: err };
+  }
+
+  try {
+    const json = await res.json();
+    let failedCount = 0;
+    if (json.data && Array.isArray(json.data)) {
+      failedCount = json.data.filter((r: any) => r.error).length;
+    }
+    return { failedCount };
+  } catch (err) {
+    return { failedCount: 0 };
+  }
+}
+
 // ─── Base template ────────────────────────────────────────────────────────────
 
 function baseTemplate(content: string): string {

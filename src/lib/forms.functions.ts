@@ -14,6 +14,7 @@ import {
   enrollmentClientEmail,
   passwordChangedEmail,
   directMessageEmail,
+  sendBatchEmails,
 } from "@/lib/email";
 
 // ─── Project inquiry ──────────────────────────────────────────────────────────
@@ -671,25 +672,21 @@ export const sendBulkMessage = createServerFn({ method: "POST" })
   .inputValidator((data) => bulkMessageSchema.parse(data))
   .handler(async ({ data }) => {
     try {
-      const results = await Promise.allSettled(
-        data.recipients.map(recipient => 
-          sendEmail({
-            ...directMessageEmail({
-              studentName: recipient.name,
-              senderName: data.senderName,
-              senderRole: data.senderRole,
-              subject: data.subject,
-              message: data.message,
-            }),
-            to: recipient.email,
-          })
-        )
-      );
+      const payloads = data.recipients.map(recipient => ({
+        ...directMessageEmail({
+          studentName: recipient.name,
+          senderName: data.senderName,
+          senderRole: data.senderRole,
+          subject: data.subject,
+          message: data.message,
+        }),
+        to: recipient.email,
+      }));
 
-      const failedCount = results.filter(r => r.status === "rejected").length;
+      const { failedCount, error } = await sendBatchEmails(payloads);
       
-      if (failedCount === data.recipients.length) {
-        return { ok: false as const, error: "Failed to send to all recipients" };
+      if (failedCount === data.recipients.length && data.recipients.length > 0) {
+        return { ok: false as const, error: error || "Failed to send to all recipients" };
       }
 
       return { ok: true as const, failedCount };
