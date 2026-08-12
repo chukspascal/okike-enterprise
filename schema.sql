@@ -289,7 +289,8 @@ CREATE TABLE public.project_inquiries (
     details text NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     client_user_id uuid,
-    status text DEFAULT 'new'::text NOT NULL
+    status text DEFAULT 'new'::text NOT NULL,
+    file_url text
 );
 
 

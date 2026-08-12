@@ -33,28 +33,48 @@ const inquirySchema = z.object({
   total: z.number().optional().nullable(),
   deposit: z.number().optional().nullable(),
   currency: z.string().optional().or(z.literal("")),
+  file_url: z.string().optional().or(z.literal("")),
 });
 
 export const submitInquiry = createServerFn({ method: "POST" })
   .inputValidator((data) => inquirySchema.parse(data))
   .handler(async ({ data }) => {
-    const { data: inquiry, error: inquiryError } = await supabaseAdmin
+    const insertPayload: any = {
+      name: data.name,
+      email: data.email,
+      phone: data.phone || null,
+      company: data.company || null,
+      project_type: data.project_type,
+      budget: data.budget || null,
+      timeline: data.timeline || null,
+      details: data.details,
+      client_user_id: data.client_user_id,
+    };
+
+    if (data.file_url) {
+      insertPayload.file_url = data.file_url;
+    }
+
+    let { data: inquiry, error: inquiryError } = await supabaseAdmin
       .from("project_inquiries")
-      .insert({
-        name: data.name,
-        email: data.email,
-        phone: data.phone || null,
-        company: data.company || null,
-        project_type: data.project_type,
-        budget: data.budget || null,
-        timeline: data.timeline || null,
-        details: data.details,
-        client_user_id: data.client_user_id,
-      })
+      .insert(insertPayload)
       .select("id")
       .single();
 
+    // Self-healing: if file_url column does not exist in the database, retry without it
+    if (inquiryError && inquiryError.message.includes("column \"file_url\" of relation \"project_inquiries\" does not exist")) {
+      delete insertPayload.file_url;
+      const retryResult = await supabaseAdmin
+        .from("project_inquiries")
+        .insert(insertPayload)
+        .select("id")
+        .single();
+      inquiry = retryResult.data;
+      inquiryError = retryResult.error;
+    }
+
     if (inquiryError) return { ok: false as const, error: inquiryError.message };
+    if (!inquiry) return { ok: false as const, error: "Failed to create inquiry record." };
 
     const { data: project, error: projectError } = await supabaseAdmin
       .from("client_projects")

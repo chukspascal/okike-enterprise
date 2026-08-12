@@ -31,6 +31,7 @@ function errorMessage(error: unknown) {
 function InquiriesPage() {
   const [list, setList] = useState<Inquiry[]>([]);
   const [open, setOpen] = useState<Inquiry | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Record<string, boolean>>({});
   const setStatus = useServerFn(setInquiryStatus);
   const convert = useServerFn(convertInquiryToProject);
 
@@ -40,19 +41,70 @@ function InquiriesPage() {
       .select("*")
       .order("created_at", { ascending: false });
     setList((data ?? []) as Inquiry[]);
+    setSelectedIds({});
   }
   useEffect(() => {
     load();
   }, []);
 
+  const selectedCount = Object.keys(selectedIds).filter((id) => selectedIds[id]).length;
+
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-medium">Inquiries</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-medium">Inquiries</h1>
+        {selectedCount > 0 && (
+          <div className="flex items-center gap-3 bg-red-500/10 ring-1 ring-red-500/20 px-4 py-2 rounded-xl text-sm text-red-800">
+            <span>Selected <strong>{selectedCount}</strong> inquiries</span>
+            <button
+              onClick={async () => {
+                if (!confirm(`Are you absolutely sure you want to permanently delete the ${selectedCount} selected inquiries? This cannot be undone.`)) {
+                  return;
+                }
+                try {
+                  const idsToDelete = Object.keys(selectedIds).filter((id) => selectedIds[id]);
+                  const { error } = await supabase
+                    .from("project_inquiries")
+                    .delete()
+                    .in("id", idsToDelete);
+                  
+                  if (error) throw new Error(error.message);
+                  
+                  toast.success(`Successfully deleted ${selectedCount} inquiries`);
+                  setSelectedIds({});
+                  await load();
+                } catch (err: unknown) {
+                  toast.error(errorMessage(err));
+                }
+              }}
+              className="px-3 py-1.5 bg-red-600 text-white font-semibold text-xs rounded-lg hover:bg-red-700 transition"
+            >
+              Delete Selected
+            </button>
+          </div>
+        )}
+      </div>
+
       <div className="bg-card rounded-2xl ring-1 ring-ink/5 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
           <thead className="bg-surface text-xs uppercase tracking-wider text-ink/40">
             <tr>
+              <th className="px-4 py-3 w-10 text-center">
+                <input 
+                  type="checkbox" 
+                  checked={list.length > 0 && list.every((i) => selectedIds[i.id])} 
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    const newSelected: Record<string, boolean> = {};
+                    if (checked) {
+                      list.forEach((i) => { newSelected[i.id] = true; });
+                    }
+                    setSelectedIds(newSelected);
+                  }}
+                  className="rounded border-ink/10 text-brand focus:ring-brand"
+                />
+              </th>
               <th className="text-left px-4 py-3">Client</th>
               <th className="text-left px-4 py-3">Type</th>
               <th className="text-left px-4 py-3">Budget</th>
@@ -64,6 +116,19 @@ function InquiriesPage() {
           <tbody className="divide-y divide-ink/5">
             {list.map((i) => (
               <tr key={i.id} className="hover:bg-surface/60">
+                <td className="px-4 py-3 w-10 text-center">
+                  <input 
+                    type="checkbox" 
+                    checked={!!selectedIds[i.id]} 
+                    onChange={(e) => {
+                      setSelectedIds({
+                        ...selectedIds,
+                        [i.id]: e.target.checked
+                      });
+                    }}
+                    className="rounded border-ink/10 text-brand focus:ring-brand"
+                  />
+                </td>
                 <td className="px-4 py-3">
                   <div className="font-medium">{i.name}</div>
                   <div className="text-xs text-ink/40">{i.email}</div>
@@ -85,7 +150,7 @@ function InquiriesPage() {
             ))}
             {list.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-ink/40">
+                <td colSpan={7} className="px-4 py-8 text-center text-ink/40">
                   No inquiries
                 </td>
               </tr>
@@ -169,6 +234,26 @@ function InquiriesPage() {
                 className="px-4 py-2 rounded-full text-sm bg-red-100 text-red-900"
               >
                 Decline
+              </button>
+              <button
+                onClick={async () => {
+                  if (!confirm("Are you absolutely sure you want to permanently delete this inquiry? This action is irreversible.")) return;
+                  try {
+                    const { error } = await supabase
+                      .from("project_inquiries")
+                      .delete()
+                      .eq("id", open.id);
+                    if (error) throw new Error(error.message);
+                    toast.success("Inquiry deleted successfully");
+                    await load();
+                    setOpen(null);
+                  } catch (e: unknown) {
+                    toast.error(errorMessage(e));
+                  }
+                }}
+                className="px-4 py-2 rounded-full text-sm bg-red-600 text-white font-medium hover:bg-red-700 transition"
+              >
+                Delete
               </button>
               <button
                 onClick={async () => {

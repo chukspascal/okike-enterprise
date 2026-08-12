@@ -7,6 +7,7 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import { submitInquiry } from "@/lib/forms.functions";
 import { askProjectAssistant } from "@/lib/ai-assistant.functions";
 import { useAuth } from "@/hooks/use-auth";
+import { FileUpload } from "@/components/ui/file-upload";
 
 export const Route = createFileRoute("/book")({
   head: () => ({
@@ -175,7 +176,14 @@ function BookPage() {
   const [step, setStep] = useState(0);
   const [busy, setBusy] = useState(false);
   const [pkg, setPkg] = useState<PackageId | null>(null);
-  const [scope, setScope] = useState({ goal: "", pages: "", brand: "", description: "" });
+  const [scope, setScope] = useState({
+    goal: "",
+    pages: "",
+    brand: "",
+    description: "",
+    fileUrl: null as string | null,
+    fileName: null as string | null,
+  });
   const [addons, setAddons] = useState<Record<string, boolean>>({});
   const [timeline, setTimeline] = useState<string>("standard");
 
@@ -362,7 +370,7 @@ function BookPage() {
         : { subtotal, total, deposit, currency: "NGN" },
       intent,
     };
-    const detailsBlock = `${scope.description || "(no extra description)"}\n\n— Builder summary —\n${JSON.stringify(summary, null, 2)}`;
+    const detailsBlock = `${scope.description || "(no extra description)"}${scope.fileUrl ? `\n\n📎 Attached Reference/Brief: ${scope.fileUrl}` : ""}\n\n— Builder summary —\n${JSON.stringify(summary, null, 2)}`;
 
     try {
       console.log("Submitting project...");
@@ -383,6 +391,7 @@ function BookPage() {
           total: isCustom ? null : total,
           deposit: isCustom ? null : deposit,
           currency: "NGN",
+          file_url: scope.fileUrl || "",
         },
       });
       console.log("Submit response:", res);
@@ -433,7 +442,7 @@ function BookPage() {
                   setAiSuggested({});
                   // Reset builder fields (req 2.8)
                   setPkg(null);
-                  setScope({ goal: "", pages: "", brand: "", description: "" });
+                  setScope({ goal: "", pages: "", brand: "", description: "", fileUrl: null, fileName: null });
                   setAddons({});
                   setTimeline("standard");
                 } else {
@@ -612,6 +621,16 @@ function BookPage() {
                     rows={5}
                     placeholder="Reference sites, existing tools, target audience, must-have features…"
                     className="bg-surface ring-1 ring-ink/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-brand transition"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <span className="text-sm font-medium">Have a project brief, wireframe, or reference file?</span>
+                  <FileUpload
+                    value={scope.fileUrl}
+                    fileName={scope.fileName}
+                    onChange={(url, name) => setScope({ ...scope, fileUrl: url, fileName: name ?? null })}
+                    bucket="media"
+                    folder="inquiries"
                   />
                 </div>
               </div>

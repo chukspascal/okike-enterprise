@@ -11,7 +11,8 @@
     "deploy": "vite build && wrangler deploy --config dist/okike/wrangler.json",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "send-reminders": "node scripts/send-whatsapp-reminders.js"
+    "send-reminders": "node scripts/send-whatsapp-reminders.js",
+    "db:migrate": "node scripts/run-sql-migration.js"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.25.5",
@@ -84,6 +85,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^15.15.0",
+    "postgres": "^3.4.9",
     "prettier": "^3.7.3",
     "qrcode-terminal": "^0.12.0",
     "typescript": "^5.8.3",

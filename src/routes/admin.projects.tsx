@@ -57,6 +57,8 @@ function AdminProjects() {
   const [milestonePlan, setMilestonePlan] = useState<string[] | null>(null);
   const [milestonePlanBusy, setMilestonePlanBusy] = useState(false);
   const [inquiryDetails, setInquiryDetails] = useState<string>("");
+  const [inquiryFileUrl, setInquiryFileUrl] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Record<string, boolean>>({});
 
   async function load() {
     const { data } = await supabase
@@ -64,6 +66,7 @@ function AdminProjects() {
       .select("id, title, client_email, package_name, total, deposit, stage, admin_notes, created_at, inquiry_id, currency")
       .order("created_at", { ascending: false });
     setList((data ?? []) as Project[]);
+    setSelectedIds({});
   }
   async function loadDetail(id: string) {
     const [{ data: m }, { data: u }] = await Promise.all([
@@ -86,28 +89,92 @@ function AdminProjects() {
       loadDetail(open.id);
       // Fetch linked inquiry details for AI milestone generation
       if (open.inquiry_id) {
-        supabase
-          .from("project_inquiries")
-          .select("details")
+        (supabase
+          .from("project_inquiries") as any)
+          .select("details, file_url")
           .eq("id", open.inquiry_id)
           .maybeSingle()
-          .then(({ data: inq }) => {
-            setInquiryDetails(inq?.details ?? "");
+          .then(({ data: inq, error }: any) => {
+            if (error) {
+              // Fallback query if file_url doesn't exist on older DB structure
+              supabase
+                .from("project_inquiries")
+                .select("details")
+                .eq("id", open.inquiry_id)
+                .maybeSingle()
+                .then(({ data: fallbackInq }) => {
+                  setInquiryDetails(fallbackInq?.details ?? "");
+                  setInquiryFileUrl(null);
+                });
+            } else {
+              setInquiryDetails(inq?.details ?? "");
+              setInquiryFileUrl(inq?.file_url ?? null);
+            }
           });
       } else {
         setInquiryDetails("");
+        setInquiryFileUrl(null);
       }
     }
   }, [open]);
+  const selectedCount = Object.keys(selectedIds).filter((id) => selectedIds[id]).length;
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-medium">Projects</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-medium">Projects</h1>
+        {selectedCount > 0 && (
+          <div className="flex items-center gap-3 bg-red-500/10 ring-1 ring-red-500/20 px-4 py-2 rounded-xl text-sm text-red-800">
+            <span>Selected <strong>{selectedCount}</strong> projects</span>
+            <button
+              onClick={async () => {
+                if (!confirm(`Are you absolutely sure you want to permanently delete the ${selectedCount} selected projects and all their linked milestones and updates? This cannot be undone.`)) {
+                  return;
+                }
+                try {
+                  const idsToDelete = Object.keys(selectedIds).filter((id) => selectedIds[id]);
+                  const { error } = await supabase
+                    .from("client_projects")
+                    .delete()
+                    .in("id", idsToDelete);
+                  
+                  if (error) throw new Error(error.message);
+                  
+                  toast.success(`Successfully deleted ${selectedCount} projects`);
+                  setSelectedIds({});
+                  await load();
+                } catch (err: unknown) {
+                  toast.error(err instanceof Error ? err.message : "Failed to bulk delete");
+                }
+              }}
+              className="px-3 py-1.5 bg-red-600 text-white font-semibold text-xs rounded-lg hover:bg-red-700 transition"
+            >
+              Delete Selected
+            </button>
+          </div>
+        )}
+      </div>
+
       <div className="bg-card rounded-2xl ring-1 ring-ink/5 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
           <thead className="bg-surface text-xs uppercase tracking-wider text-ink/40">
             <tr>
+              <th className="px-4 py-3 w-10 text-center">
+                <input 
+                  type="checkbox" 
+                  checked={list.length > 0 && list.every((p) => selectedIds[p.id])} 
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    const newSelected: Record<string, boolean> = {};
+                    if (checked) {
+                      list.forEach((p) => { newSelected[p.id] = true; });
+                    }
+                    setSelectedIds(newSelected);
+                  }}
+                  className="rounded border-ink/10 text-brand focus:ring-brand"
+                />
+              </th>
               <th className="text-left px-4 py-3">Title</th>
               <th className="text-left px-4 py-3">Client</th>
               <th className="text-left px-4 py-3">Stage</th>
@@ -118,6 +185,19 @@ function AdminProjects() {
           <tbody className="divide-y divide-ink/5">
             {list.map((p) => (
               <tr key={p.id} className="hover:bg-surface/60">
+                <td className="px-4 py-3 w-10 text-center">
+                  <input 
+                    type="checkbox" 
+                    checked={!!selectedIds[p.id]} 
+                    onChange={(e) => {
+                      setSelectedIds({
+                        ...selectedIds,
+                        [p.id]: e.target.checked
+                      });
+                    }}
+                    className="rounded border-ink/10 text-brand focus:ring-brand"
+                  />
+                </td>
                 <td className="px-4 py-3 font-medium">{p.title}</td>
                 <td className="px-4 py-3 text-xs">{p.client_email}</td>
                 <td className="px-4 py-3">
@@ -137,7 +217,7 @@ function AdminProjects() {
             ))}
             {list.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-ink/40">
+                <td colSpan={6} className="px-4 py-8 text-center text-ink/40">
                   No projects yet — accept an inquiry first.
                 </td>
               </tr>
@@ -232,6 +312,27 @@ function AdminProjects() {
                 className="bg-card ring-1 ring-ink/10 rounded-xl px-3 py-2 text-sm"
               />
             </label>
+
+            {/* Client Inquiry Details & Uploaded Files */}
+            <div className="flex flex-col gap-2 p-4 bg-surface ring-1 ring-ink/5 rounded-xl text-sm">
+              <span className="text-xs uppercase tracking-wider text-ink/40 font-semibold">Client Inquiry Details</span>
+              <p className="whitespace-pre-line text-ink/75 leading-relaxed mt-1 text-xs max-h-48 overflow-y-auto bg-card p-3 rounded-lg ring-1 ring-ink/5">
+                {inquiryDetails || "No details provided."}
+              </p>
+              
+              {(inquiryFileUrl || inquiryDetails.includes("📎 Attached Reference/Brief:")) && (
+                <div className="mt-2">
+                  <a
+                    href={inquiryFileUrl || (inquiryDetails.match(/📎 Attached Reference\/Brief:\s*(https:\/\/[^\s]+)/)?.[1]) || undefined}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand text-brand-foreground text-xs font-semibold rounded-lg hover:opacity-90 transition"
+                  >
+                    📎 View Client Brief / File &rarr;
+                  </a>
+                </div>
+              )}
+            </div>
 
             {ms.length === 0 && (
               <div>
@@ -439,6 +540,38 @@ function AdminProjects() {
                   </li>
                 ))}
               </ul>
+            </div>
+
+            {/* Danger Zone */}
+            <div className="border-t border-red-500/10 pt-4 mt-2 flex justify-between items-center bg-red-500/5 p-4 rounded-xl ring-1 ring-red-500/10">
+              <div className="flex flex-col gap-0.5 text-xs">
+                <span className="font-semibold text-red-700">Danger Zone</span>
+                <span className="text-red-600/70">Permanently delete this project and all linked updates and milestones.</span>
+              </div>
+              <button
+                onClick={async () => {
+                  if (!confirm("Are you absolutely sure you want to permanently delete this project? This action is irreversible.")) {
+                    return;
+                  }
+                  try {
+                    const { error } = await supabase
+                      .from("client_projects")
+                      .delete()
+                      .eq("id", open.id);
+                    
+                    if (error) throw new Error(error.message);
+                    
+                    toast.success("Project deleted successfully");
+                    setOpen(null);
+                    await load();
+                  } catch (err: unknown) {
+                    toast.error(err instanceof Error ? err.message : "Failed to delete project");
+                  }
+                }}
+                className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-semibold hover:bg-red-700 transition"
+              >
+                Delete Project
+              </button>
             </div>
           </div>
         </div>
