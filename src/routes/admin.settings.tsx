@@ -33,6 +33,29 @@ const KEYS: {
     ],
   },
   {
+    key: "about_founder_story",
+    label: "About Page: Founder Story",
+    fields: [
+      { name: "founder_name", label: "Founder Name" },
+      { name: "founder_title", label: "Founder Title" },
+      { name: "founder_quote", label: "Founder Highlight Quote (Inside Box)", type: "textarea" },
+      { name: "founder_letter_p1", label: "Letter Paragraph 1", type: "textarea" },
+      { name: "founder_letter_p2", label: "Letter Paragraph 2", type: "textarea" },
+      { name: "founder_letter_p3", label: "Letter Paragraph 3", type: "textarea" },
+    ],
+  },
+  {
+    key: "about_timeline",
+    label: "About Page: Timeline (JSON)",
+    fields: [
+      { 
+        name: "milestones_json", 
+        label: 'Milestones (List of {"year": "...", "title": "...", "desc": "..."})', 
+        type: "textarea" 
+      },
+    ],
+  },
+  {
     key: "contact",
     label: "Contact info",
     fields: [

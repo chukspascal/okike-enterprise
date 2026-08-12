@@ -46,6 +46,7 @@ const NAV: { to: string; label: string; icon: LucideIcon; exact?: boolean }[] = 
   { to: "/admin/content/portfolio", label: "Portfolio", icon: ImageIcon },
   { to: "/admin/content/partners", label: "Partners", icon: Users },
   { to: "/admin/content/blog", label: "Blog", icon: FileText },
+  { to: "/admin/about-editor", label: "About Page CMS", icon: FileText },
   { to: "/admin/content/events", label: "Events", icon: Megaphone },
   { to: "/admin/announcements", label: "Messages", icon: Megaphone },
   { to: "/admin/reports", label: "Reports", icon: FileText },

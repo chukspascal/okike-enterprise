@@ -44,6 +44,7 @@ import { Route as AdminInquiriesRouteImport } from './routes/admin.inquiries'
 import { Route as AdminBootcampRouteImport } from './routes/admin.bootcamp'
 import { Route as AdminAnnouncementsRouteImport } from './routes/admin.announcements'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
+import { Route as AdminAboutEditorRouteImport } from './routes/admin.about-editor'
 import { Route as ApiReceiptIdRouteImport } from './routes/api.receipt.$id'
 import { Route as ApiCronPublishBlogRouteImport } from './routes/api.cron.publish-blog'
 import { Route as AdminContentTypeRouteImport } from './routes/admin.content.$type'
@@ -223,6 +224,11 @@ const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAboutEditorRoute = AdminAboutEditorRouteImport.update({
+  id: '/about-editor',
+  path: '/about-editor',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ApiReceiptIdRoute = ApiReceiptIdRouteImport.update({
   id: '/api/receipt/$id',
   path: '/api/receipt/$id',
@@ -259,6 +265,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/thank-you': typeof ThankYouRoute
+  '/admin/about-editor': typeof AdminAboutEditorRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/bootcamp': typeof AdminBootcampRoute
@@ -296,6 +303,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/thank-you': typeof ThankYouRoute
+  '/admin/about-editor': typeof AdminAboutEditorRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/bootcamp': typeof AdminBootcampRoute
@@ -337,6 +345,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/thank-you': typeof ThankYouRoute
+  '/admin/about-editor': typeof AdminAboutEditorRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/bootcamp': typeof AdminBootcampRoute
@@ -379,6 +388,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/thank-you'
+    | '/admin/about-editor'
     | '/admin/analytics'
     | '/admin/announcements'
     | '/admin/bootcamp'
@@ -416,6 +426,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/thank-you'
+    | '/admin/about-editor'
     | '/admin/analytics'
     | '/admin/announcements'
     | '/admin/bootcamp'
@@ -456,6 +467,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/thank-you'
+    | '/admin/about-editor'
     | '/admin/analytics'
     | '/admin/announcements'
     | '/admin/bootcamp'
@@ -748,6 +760,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAnalyticsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/about-editor': {
+      id: '/admin/about-editor'
+      path: '/about-editor'
+      fullPath: '/admin/about-editor'
+      preLoaderRoute: typeof AdminAboutEditorRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/api/receipt/$id': {
       id: '/api/receipt/$id'
       path: '/api/receipt/$id'
@@ -773,6 +792,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAboutEditorRoute: typeof AdminAboutEditorRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminAnnouncementsRoute: typeof AdminAnnouncementsRoute
   AdminBootcampRoute: typeof AdminBootcampRoute
@@ -788,6 +808,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAboutEditorRoute: AdminAboutEditorRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminAnnouncementsRoute: AdminAnnouncementsRoute,
   AdminBootcampRoute: AdminBootcampRoute,

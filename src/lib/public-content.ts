@@ -30,6 +30,9 @@ export type PublicTeam = {
   role: string | null;
   bio: string | null;
   image_url: string | null;
+  skills?: string[] | null;
+  github?: string | null;
+  linkedin?: string | null;
 };
 
 export type PublicBlogPost = {
@@ -119,10 +122,10 @@ export async function getPartners(): Promise<PublicPartner[]> {
 export async function getTeam(): Promise<PublicTeam[]> {
   const { data } = await supabase
     .from("team_members")
-    .select("id, name, role, bio, image_url")
+    .select("id, name, role, bio, image_url, skills, github, linkedin")
     .eq("published", true)
     .order("position", { ascending: true });
-  return (data ?? []) as PublicTeam[];
+  return (data ?? []) as any[];
 }
 
 export async function getSettings(keys: string[]): Promise<Record<string, Json>> {
