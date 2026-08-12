@@ -49,7 +49,7 @@ function AboutPage() {
 
           <h1 className="font-display text-[clamp(2.5rem,7.5vw,5.5rem)] leading-[0.95] tracking-tight uppercase text-contrast-foreground max-w-5xl font-extrabold">
             Built in Africa. <br />
-            <span className="text-brand italic font-serif">Engineered</span> for the world.
+            <span className="text-brand italic">Engineered</span> for the world.
           </h1>
 
           <p className="text-base md:text-xl text-contrast-foreground/75 max-w-[48ch] leading-relaxed mt-6 font-medium">
@@ -130,7 +130,7 @@ function AboutPage() {
                 By day, we function as a high-integrity software studio, designing secure APIs, robust databases, and beautiful client-side web and mobile apps for partners. By night and weekend, we run our intensive academy cohorts, utilizing the exact same stack we write for enterprise clients.
               </p>
               <div className="p-6 bg-brand/5 border-l-4 border-brand rounded-r-xl my-4">
-                <p className="font-serif italic text-lg text-ink font-medium leading-relaxed">
+                <p className="italic text-lg text-ink font-medium leading-relaxed">
                   "We keep our cohorts and project load small on purpose. Every client gets senior engineering oversight. Every student gets real code reviews. Quality isn't a promise — it's the only asset that compounds."
                 </p>
               </div>
@@ -140,7 +140,7 @@ function AboutPage() {
             </div>
 
             <div className="pt-6 border-t border-ink/10 flex flex-col gap-1">
-              <span className="font-serif italic text-lg text-brand font-bold">— Founder & Lead Builder</span>
+              <span className="italic text-lg text-brand font-bold">— Founder & Lead Builder</span>
               <span className="text-xs text-ink/50">OKIKE Enterprises</span>
             </div>
           </article>
@@ -326,7 +326,7 @@ function AboutPage() {
           </div>
 
           <h2 className="font-display text-4xl md:text-6xl leading-[0.95] tracking-tight uppercase text-ink font-extrabold mb-8">
-            Let's build something <span className="text-brand italic font-serif">extraordinary</span> together.
+            Let's build something <span className="text-brand italic">extraordinary</span> together.
           </h2>
 
           <p className="text-xs md:text-base text-ink/65 leading-relaxed mb-10 max-w-[50ch] mx-auto">

@@ -1291,6 +1291,26 @@ function DashboardOverview({
                     <span className="font-medium text-ink/80 truncate block">{reg.payment_reference || "N/A (Free)"}</span>
                   </div>
                 </div>
+
+                {/* WhatsApp Community Invite Alert */}
+                <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl space-y-2 text-xs">
+                  <div className="flex items-center gap-2 font-semibold text-emerald-600 dark:text-emerald-400">
+                    <span className="size-2 rounded-full bg-emerald-500 animate-ping" />
+                    Join the Official WhatsApp Community
+                  </div>
+                  <p className="text-ink/70 leading-relaxed">
+                    Get real-time announcements, virtual session links, assignments, and curriculum updates. Joining the group is required for this track.
+                  </p>
+                  <a
+                    href="https://chat.whatsapp.com/GLemXx2uWn5F6Nm40ihiD7"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center gap-1.5 w-full py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg uppercase tracking-wider text-[10px] transition mt-1"
+                  >
+                    Join WhatsApp Community &rarr;
+                  </a>
+                </div>
+
                 {reg.payment_status !== "pending" && (
                   <a
                     href={`/api/receipt/${reg.id}`}
@@ -4623,3 +4643,9 @@ function SupportChatConsole({
     </section>
   );
 }
+
+const WhatsappIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.625 1.451 5.403.002 9.803-4.394 9.806-9.799.002-2.618-1.015-5.08-2.859-6.927C16.378 2.032 13.911 1.016 11.99 1.016c-5.407 0-9.813 4.398-9.817 9.8-.001 1.564.423 3.09 1.226 4.453l-1.014 3.702 3.805-.989zM16.5 13.5c-.27-.13-1.59-.785-1.84-.875-.25-.09-.43-.13-.61.13-.18.26-.71.875-.87 1.055-.16.18-.32.2-.59.07-2.3-1.12-3.66-2.58-4.22-3.55-.16-.27-.02-.42.12-.55.12-.12.27-.32.4-.48.13-.16.18-.27.27-.45.09-.18.04-.34-.02-.47-.07-.13-.61-1.475-.84-2.02-.22-.53-.45-.46-.61-.47h-.52c-.18 0-.47.07-.72.34-.25.27-.96.94-.96 2.29s.98 2.64 1.12 2.82c.14.18 1.93 2.94 4.67 4.12.65.28 1.16.45 1.56.57.66.21 1.25.18 1.72.11.52-.08 1.59-.65 1.81-1.27.22-.63.22-1.16.16-1.27-.06-.11-.22-.18-.49-.31z" />
+  </svg>
+);
