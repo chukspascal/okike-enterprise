@@ -40,6 +40,7 @@ import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
 import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
+import { Route as AdminMarketResearchRouteImport } from './routes/admin.market-research'
 import { Route as AdminInquiriesRouteImport } from './routes/admin.inquiries'
 import { Route as AdminBootcampRouteImport } from './routes/admin.bootcamp'
 import { Route as AdminAuditLogsRouteImport } from './routes/admin.audit-logs'
@@ -47,6 +48,7 @@ import { Route as AdminAnnouncementsRouteImport } from './routes/admin.announcem
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminAboutEditorRouteImport } from './routes/admin.about-editor'
 import { Route as ApiReceiptIdRouteImport } from './routes/api.receipt.$id'
+import { Route as ApiCronScrapeIssuesRouteImport } from './routes/api.cron.scrape-issues'
 import { Route as ApiCronPublishBlogRouteImport } from './routes/api.cron.publish-blog'
 import { Route as AdminContentTypeRouteImport } from './routes/admin.content.$type'
 
@@ -205,6 +207,11 @@ const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
   path: '/payments',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminMarketResearchRoute = AdminMarketResearchRouteImport.update({
+  id: '/market-research',
+  path: '/market-research',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminInquiriesRoute = AdminInquiriesRouteImport.update({
   id: '/inquiries',
   path: '/inquiries',
@@ -238,6 +245,11 @@ const AdminAboutEditorRoute = AdminAboutEditorRouteImport.update({
 const ApiReceiptIdRoute = ApiReceiptIdRouteImport.update({
   id: '/api/receipt/$id',
   path: '/api/receipt/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCronScrapeIssuesRoute = ApiCronScrapeIssuesRouteImport.update({
+  id: '/api/cron/scrape-issues',
+  path: '/api/cron/scrape-issues',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiCronPublishBlogRoute = ApiCronPublishBlogRouteImport.update({
@@ -277,6 +289,7 @@ export interface FileRoutesByFullPath {
   '/admin/audit-logs': typeof AdminAuditLogsRoute
   '/admin/bootcamp': typeof AdminBootcampRoute
   '/admin/inquiries': typeof AdminInquiriesRoute
+  '/admin/market-research': typeof AdminMarketResearchRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -291,6 +304,7 @@ export interface FileRoutesByFullPath {
   '/instructor/': typeof InstructorIndexRoute
   '/admin/content/$type': typeof AdminContentTypeRoute
   '/api/cron/publish-blog': typeof ApiCronPublishBlogRoute
+  '/api/cron/scrape-issues': typeof ApiCronScrapeIssuesRoute
   '/api/receipt/$id': typeof ApiReceiptIdRoute
 }
 export interface FileRoutesByTo {
@@ -316,6 +330,7 @@ export interface FileRoutesByTo {
   '/admin/audit-logs': typeof AdminAuditLogsRoute
   '/admin/bootcamp': typeof AdminBootcampRoute
   '/admin/inquiries': typeof AdminInquiriesRoute
+  '/admin/market-research': typeof AdminMarketResearchRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -330,6 +345,7 @@ export interface FileRoutesByTo {
   '/instructor': typeof InstructorIndexRoute
   '/admin/content/$type': typeof AdminContentTypeRoute
   '/api/cron/publish-blog': typeof ApiCronPublishBlogRoute
+  '/api/cron/scrape-issues': typeof ApiCronScrapeIssuesRoute
   '/api/receipt/$id': typeof ApiReceiptIdRoute
 }
 export interface FileRoutesById {
@@ -359,6 +375,7 @@ export interface FileRoutesById {
   '/admin/audit-logs': typeof AdminAuditLogsRoute
   '/admin/bootcamp': typeof AdminBootcampRoute
   '/admin/inquiries': typeof AdminInquiriesRoute
+  '/admin/market-research': typeof AdminMarketResearchRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -373,6 +390,7 @@ export interface FileRoutesById {
   '/instructor/': typeof InstructorIndexRoute
   '/admin/content/$type': typeof AdminContentTypeRoute
   '/api/cron/publish-blog': typeof ApiCronPublishBlogRoute
+  '/api/cron/scrape-issues': typeof ApiCronScrapeIssuesRoute
   '/api/receipt/$id': typeof ApiReceiptIdRoute
 }
 export interface FileRouteTypes {
@@ -403,6 +421,7 @@ export interface FileRouteTypes {
     | '/admin/audit-logs'
     | '/admin/bootcamp'
     | '/admin/inquiries'
+    | '/admin/market-research'
     | '/admin/payments'
     | '/admin/projects'
     | '/admin/reports'
@@ -417,6 +436,7 @@ export interface FileRouteTypes {
     | '/instructor/'
     | '/admin/content/$type'
     | '/api/cron/publish-blog'
+    | '/api/cron/scrape-issues'
     | '/api/receipt/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -442,6 +462,7 @@ export interface FileRouteTypes {
     | '/admin/audit-logs'
     | '/admin/bootcamp'
     | '/admin/inquiries'
+    | '/admin/market-research'
     | '/admin/payments'
     | '/admin/projects'
     | '/admin/reports'
@@ -456,6 +477,7 @@ export interface FileRouteTypes {
     | '/instructor'
     | '/admin/content/$type'
     | '/api/cron/publish-blog'
+    | '/api/cron/scrape-issues'
     | '/api/receipt/$id'
   id:
     | '__root__'
@@ -484,6 +506,7 @@ export interface FileRouteTypes {
     | '/admin/audit-logs'
     | '/admin/bootcamp'
     | '/admin/inquiries'
+    | '/admin/market-research'
     | '/admin/payments'
     | '/admin/projects'
     | '/admin/reports'
@@ -498,6 +521,7 @@ export interface FileRouteTypes {
     | '/instructor/'
     | '/admin/content/$type'
     | '/api/cron/publish-blog'
+    | '/api/cron/scrape-issues'
     | '/api/receipt/$id'
   fileRoutesById: FileRoutesById
 }
@@ -522,6 +546,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ThankYouRoute: typeof ThankYouRoute
   ApiCronPublishBlogRoute: typeof ApiCronPublishBlogRoute
+  ApiCronScrapeIssuesRoute: typeof ApiCronScrapeIssuesRoute
   ApiReceiptIdRoute: typeof ApiReceiptIdRoute
 }
 
@@ -744,6 +769,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPaymentsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/market-research': {
+      id: '/admin/market-research'
+      path: '/market-research'
+      fullPath: '/admin/market-research'
+      preLoaderRoute: typeof AdminMarketResearchRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/inquiries': {
       id: '/admin/inquiries'
       path: '/inquiries'
@@ -793,6 +825,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiReceiptIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/cron/scrape-issues': {
+      id: '/api/cron/scrape-issues'
+      path: '/api/cron/scrape-issues'
+      fullPath: '/api/cron/scrape-issues'
+      preLoaderRoute: typeof ApiCronScrapeIssuesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/cron/publish-blog': {
       id: '/api/cron/publish-blog'
       path: '/api/cron/publish-blog'
@@ -817,6 +856,7 @@ interface AdminRouteChildren {
   AdminAuditLogsRoute: typeof AdminAuditLogsRoute
   AdminBootcampRoute: typeof AdminBootcampRoute
   AdminInquiriesRoute: typeof AdminInquiriesRoute
+  AdminMarketResearchRoute: typeof AdminMarketResearchRoute
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminProjectsRoute: typeof AdminProjectsRoute
   AdminReportsRoute: typeof AdminReportsRoute
@@ -834,6 +874,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAuditLogsRoute: AdminAuditLogsRoute,
   AdminBootcampRoute: AdminBootcampRoute,
   AdminInquiriesRoute: AdminInquiriesRoute,
+  AdminMarketResearchRoute: AdminMarketResearchRoute,
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminProjectsRoute: AdminProjectsRoute,
   AdminReportsRoute: AdminReportsRoute,
@@ -895,6 +936,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ThankYouRoute: ThankYouRoute,
   ApiCronPublishBlogRoute: ApiCronPublishBlogRoute,
+  ApiCronScrapeIssuesRoute: ApiCronScrapeIssuesRoute,
   ApiReceiptIdRoute: ApiReceiptIdRoute,
 }
 export const routeTree = rootRouteImport

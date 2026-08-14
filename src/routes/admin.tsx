@@ -22,6 +22,11 @@ import {
   BookOpen,
   GraduationCap,
   ShieldAlert,
+  Sparkles,
+  ChevronLeft,
+  ChevronRight,
+  PanelLeftClose,
+  PanelLeft
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -39,6 +44,7 @@ const NAV: { to: string; label: string; icon: LucideIcon; exact?: boolean }[] = 
   { to: "/admin/projects", label: "Projects", icon: FolderKanban },
   { to: "/admin/payments", label: "Payments", icon: CreditCard },
   { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+  { to: "/admin/market-research", label: "Market Research", icon: Sparkles },
   { to: "/admin/content/courses", label: "Courses", icon: BookOpen },
   { to: "/admin/content/tracks", label: "Learning Paths", icon: BookOpen },
   { to: "/admin/content/physical-classes", label: "Physical Classes", icon: BookOpen },
@@ -61,6 +67,7 @@ function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     if (loading) return;
@@ -82,66 +89,114 @@ function AdminLayout() {
 
   const email = session.user?.email ?? "Admin";
   const initial = (email[0] ?? "A").toUpperCase();
+  const isMarketResearch = location.pathname.startsWith("/admin/market-research");
 
-  const SidebarNav = (
-    <>
-      <div className="px-1">
-        <Link to="/" className="block" aria-label="OKIKE home">
-          <img src={okikeLogo} alt="OKIKE" className="h-8 w-auto" />
-        </Link>
-        <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-0.5">
-          Admin Console
-        </div>
-      </div>
+  const renderSidebar = (isMobile = false) => {
+    const isCollapsed = !isMobile && collapsed;
 
-      <nav className="mt-7 flex-1 flex flex-col gap-1 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
-        {NAV.map((t) => {
-          const active = t.exact ? location.pathname === t.to : location.pathname.startsWith(t.to);
-          const Icon = t.icon;
-          return (
-            <Link
-              key={t.to}
-              to={t.to}
-              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${active
-                  ? "bg-brand/15 text-brand ring-1 ring-brand/30"
-                  : "text-foreground/70 hover:text-foreground hover:bg-foreground/5"
-                }`}
+    return (
+      <>
+        <div className={`flex items-center justify-between w-full ${isCollapsed ? "px-0 justify-center" : "px-1"}`}>
+          <Link to="/" className="flex items-center gap-2" aria-label="OKIKE home">
+            {isCollapsed ? (
+              <div className="size-9 rounded-xl bg-brand/20 ring-1 ring-brand/40 grid place-items-center font-display text-lg font-bold text-brand shadow-sm">
+                O
+              </div>
+            ) : (
+              <div>
+                <img src={okikeLogo} alt="OKIKE" className="h-8 w-auto object-contain" />
+                <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-0.5 font-mono">
+                  Admin Console
+                </div>
+              </div>
+            )}
+          </Link>
+          
+          {!isMobile && (
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              className={`p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition ${isCollapsed ? "hidden" : "block"}`}
+              title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
-              <Icon className="size-4" />
-              <span className="flex-1">{t.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
+              <ChevronLeft className="size-4" />
+            </button>
+          )}
+        </div>
 
-      <div className="mt-4 flex items-center gap-3 px-1 py-2 rounded-xl">
-        <div className="size-9 rounded-full bg-brand/20 ring-2 ring-brand/30 grid place-items-center text-sm font-semibold text-brand">
-          {initial}
+        <nav className="mt-6 flex-1 flex flex-col gap-1 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
+          {NAV.map((t) => {
+            const active = t.exact ? location.pathname === t.to : location.pathname.startsWith(t.to);
+            const Icon = t.icon;
+            return (
+              <Link
+                key={t.to}
+                to={t.to}
+                title={isCollapsed ? t.label : undefined}
+                className={`flex items-center gap-3 rounded-xl py-2.5 text-sm font-medium transition ${
+                  isCollapsed ? "justify-center px-2" : "px-3"
+                } ${
+                  active
+                    ? "bg-brand/15 text-brand ring-1 ring-brand/30"
+                    : "text-foreground/70 hover:text-foreground hover:bg-foreground/5"
+                }`}
+              >
+                <Icon className="size-4 shrink-0" />
+                {!isCollapsed && <span className="flex-1 truncate">{t.label}</span>}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {isCollapsed && (
+          <button
+            onClick={() => setCollapsed(false)}
+            className="my-2 p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition flex items-center justify-center"
+            title="Expand sidebar"
+            aria-label="Expand sidebar"
+          >
+            <ChevronRight className="size-4" />
+          </button>
+        )}
+
+        <div className={`mt-3 flex items-center rounded-xl py-2 ${isCollapsed ? "justify-center px-0" : "gap-3 px-1"}`}>
+          <div className="size-9 rounded-full bg-brand/20 ring-2 ring-brand/30 grid place-items-center text-sm font-semibold text-brand shrink-0">
+            {initial}
+          </div>
+          {!isCollapsed && (
+            <>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium truncate">{email}</div>
+                <div className="text-[11px] text-muted-foreground">Admin</div>
+              </div>
+              <button
+                onClick={async () => {
+                  await signOut();
+                  navigate({ to: "/" });
+                }}
+                className="text-muted-foreground hover:text-brand p-1 rounded"
+                aria-label="Sign out"
+              >
+                <LogOut className="size-4" />
+              </button>
+            </>
+          )}
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-sm font-medium truncate">{email}</div>
-          <div className="text-[11px] text-muted-foreground">Admin</div>
-        </div>
-        <button
-          onClick={async () => {
-            await signOut();
-            navigate({ to: "/" });
-          }}
-          className="text-muted-foreground hover:text-brand p-1 rounded"
-          aria-label="Sign out"
-        >
-          <LogOut className="size-4" />
-        </button>
-      </div>
-    </>
-  );
+      </>
+    );
+  };
 
   return (
     <div className="h-screen bg-background text-foreground overflow-hidden">
       <div className="flex h-full">
         {/* Desktop sidebar */}
-        <aside className="hidden lg:flex h-full w-64 shrink-0 flex-col border-r border-border bg-card px-5 py-5 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
-          {SidebarNav}
+        <aside
+          className={`hidden lg:flex h-full shrink-0 flex-col border-r border-border bg-card py-5 overflow-y-auto transition-all duration-300 ease-in-out ${
+            collapsed ? "w-[72px] px-2.5" : "w-64 px-5"
+          }`}
+          style={{ scrollbarWidth: "none" }}
+        >
+          {renderSidebar(false)}
         </aside>
 
         {/* Mobile drawer */}
@@ -156,14 +211,14 @@ function AdminLayout() {
               >
                 <X className="size-4" />
               </button>
-              {SidebarNav}
+              {renderSidebar(true)}
             </aside>
           </div>
         )}
 
-        {/* Main */}
+        {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0 h-full">
-          <header className="sticky top-0 z-30 flex items-center gap-3 px-4 md:px-8 py-4 bg-background/85 backdrop-blur border-b border-border">
+          <header className="sticky top-0 z-30 flex items-center gap-3 px-4 md:px-6 py-3.5 bg-background/90 backdrop-blur border-b border-border">
             <button
               className="lg:hidden text-foreground/70 p-2 hover:bg-foreground/5 rounded-lg"
               onClick={() => setMobileOpen(true)}
@@ -171,23 +226,35 @@ function AdminLayout() {
             >
               <Menu className="size-5" />
             </button>
+
+            {/* Desktop collapse toggle icon on header */}
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              className="hidden lg:flex text-muted-foreground hover:text-foreground p-1.5 rounded-lg hover:bg-foreground/5 transition"
+              title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {collapsed ? <PanelLeft className="size-4" /> : <PanelLeftClose className="size-4" />}
+            </button>
+
             <div className="flex-1 min-w-0">
-              <h2 className="text-sm font-medium text-foreground/80 truncate">
+              <h2 className="text-sm font-medium text-foreground/80 truncate font-mono">
                 {NAV.find((n) =>
                   n.exact ? location.pathname === n.to : location.pathname.startsWith(n.to),
                 )?.label ?? "Admin"}
               </h2>
             </div>
+
             <Link
               to="/dashboard"
-              className="hidden sm:inline-flex items-center gap-2 rounded-xl bg-foreground/5 ring-1 ring-border px-3 py-2 text-xs font-medium hover:bg-foreground/10"
+              className="hidden sm:inline-flex items-center gap-2 rounded-xl bg-foreground/5 ring-1 ring-border px-3 py-1.5 text-xs font-medium hover:bg-foreground/10 font-mono"
             >
               Client view
             </Link>
             <ThemeToggle />
           </header>
 
-          <main className="flex-1 px-4 md:px-8 py-6 overflow-y-auto">
+          <main className={`flex-1 overflow-y-auto ${isMarketResearch ? "p-0" : "px-4 md:px-8 py-6"}`}>
             <Outlet />
           </main>
         </div>
