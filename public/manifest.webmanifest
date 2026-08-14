@@ -1,0 +1,21 @@
+{
+  "name": "OKIKE Enterprise",
+  "short_name": "OKIKE",
+  "description": "Nigerian software studio and tech academy.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#141416",
+  "theme_color": "#E0EB32",
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
