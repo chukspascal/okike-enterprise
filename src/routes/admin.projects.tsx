@@ -32,7 +32,7 @@ type Milestone = {
   note: string | null;
   position: number;
 };
-type MilestoneStatus = Milestone["status"];
+type MilestoneStatus = Milestone["status"]; 
 type Update = { id: string; project_id: string; message: string; created_at: string };
 
 const STAGES = ["submitted", "reviewing", "accepted", "declined", "in_progress", "completed"];

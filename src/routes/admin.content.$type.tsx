@@ -169,7 +169,7 @@ const TABLE_MAP: Record<
       { key: "published", label: "Published", render: (r) => (r.published ? "✓" : "—") },
     ],
   },
-  team: {
+  team_members: {
     table: "team_members",
     title: "Team",
     fields: [
