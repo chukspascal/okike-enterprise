@@ -2789,10 +2789,10 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
         {/* LMS Player Panel */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Left panel tabs navigation */}
-          <div className="lg:col-span-3 flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0">
+          <div className="lg:col-span-3 flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 scrollbar-none">
             <button
               onClick={() => setActiveTab("lessons")}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 w-full text-left ${
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${
                 activeTab === "lessons" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
               }`}
             >
@@ -2800,7 +2800,7 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
             </button>
             <button
               onClick={() => setActiveTab("milestones")}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 w-full text-left ${
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${
                 activeTab === "milestones" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
               }`}
             >
@@ -2808,7 +2808,7 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
             </button>
             <button
               onClick={() => setActiveTab("quizzes")}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 w-full text-left ${
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${
                 activeTab === "quizzes" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
               }`}
             >
@@ -2816,7 +2816,7 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
             </button>
             <button
               onClick={() => setActiveTab("assignments")}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 w-full text-left ${
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${
                 activeTab === "assignments" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
               }`}
             >
@@ -2824,7 +2824,7 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
             </button>
             <button
               onClick={() => setActiveTab("virtual")}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 w-full text-left ${
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${
                 activeTab === "virtual" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
               }`}
             >
@@ -2832,7 +2832,7 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
             </button>
             <button
               onClick={() => setActiveTab("materials")}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 w-full text-left ${
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${
                 activeTab === "materials" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
               }`}
             >
@@ -2840,7 +2840,7 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
             </button>
             <button
               onClick={() => setActiveTab("sandbox")}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 w-full text-left ${
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${
                 activeTab === "sandbox" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
               }`}
             >
@@ -2854,8 +2854,33 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
             {/* TABS: LESSONS WORKSPACE */}
             {activeTab === "lessons" && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                {/* Syllabus Checklist */}
-                <div className="md:col-span-4 flex flex-col gap-2 max-h-[45vh] overflow-y-auto pr-1">
+                {/* Mobile Lessons Dropdown */}
+                <div className="block md:hidden w-full">
+                  <label htmlFor="mobile-lesson-select" className="block text-xs font-semibold text-ink/55 uppercase tracking-wider mb-1.5">
+                    Select Lesson
+                  </label>
+                  <select
+                    id="mobile-lesson-select"
+                    value={activeLessonIndex}
+                    onChange={(e) => {
+                      setActiveLessonIndex(Number(e.target.value));
+                      setQuizScoreFeedback(null);
+                    }}
+                    className="w-full bg-card ring-1 ring-ink/10 rounded-xl p-3.5 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-brand transition"
+                  >
+                    {lessons.map((lesson, idx) => {
+                      const isCompleted = progress?.lessons_completed?.includes(lesson);
+                      return (
+                        <option key={lesson} value={idx}>
+                          {idx + 1}. {lesson}{isCompleted ? " (✓)" : ""}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+
+                {/* Desktop Syllabus Checklist */}
+                <div className="hidden md:flex md:col-span-4 flex-col gap-2 max-h-[60vh] overflow-y-auto pr-1">
                   <h4 className="font-semibold text-xs text-ink/55 uppercase tracking-wider mb-1">Lessons Index</h4>
                   {lessons.map((lesson, idx) => {
                     const isCompleted = progress?.lessons_completed?.includes(lesson);
@@ -3306,7 +3331,7 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
                 ) : (
                   <div className="grid gap-3">
                     {dbCourseMaterials.map((m) => (
-                      <div key={m.id} className="bg-surface ring-1 ring-ink/5 rounded-xl p-4 flex justify-between items-start gap-4">
+                      <div key={m.id} className="bg-surface ring-1 ring-ink/5 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                           <div className="text-xs font-semibold text-ink">{m.title}</div>
                           {m.description && <p className="text-[10px] text-ink/60 mt-1">{m.description}</p>}
@@ -3315,7 +3340,7 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
                           href={m.file_url}
                           target="_blank"
                           rel="noreferrer"
-                          className="px-4 py-2 rounded-xl bg-brand text-brand-foreground font-semibold text-[10px] uppercase tracking-wider hover:opacity-90 text-center shrink-0"
+                          className="px-4 py-2 rounded-xl bg-brand text-brand-foreground font-semibold text-[10px] uppercase tracking-wider hover:opacity-90 text-center shrink-0 w-full sm:w-auto"
                         >
                           Download Resource
                         </a>

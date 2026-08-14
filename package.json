@@ -13,7 +13,8 @@
     "format": "prettier --write .",
     "send-reminders": "node scripts/send-whatsapp-reminders.js",
     "db:migrate": "node scripts/run-sql-migration.js",
-    "db:migrate:team": "node scripts/run-team-migration.js"
+    "db:migrate:team": "node scripts/run-team-migration.js",
+    "db:migrate:audit": "node scripts/run-audit-migration.js"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.25.5",

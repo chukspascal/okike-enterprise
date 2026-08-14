@@ -402,7 +402,8 @@ function AboutEditorPage() {
               </p>
             </div>
             <Link
-              to="/admin/content/team"
+              to="/admin/content/$type"
+              params={{ type: "team_members" }}
               className="inline-flex items-center gap-2 bg-brand text-brand-foreground px-6 py-3.5 font-bold text-xs uppercase tracking-widest hover:opacity-90 transition shadow-md"
             >
               Go to Team Profiles CMS <ArrowUpRight className="size-4" />

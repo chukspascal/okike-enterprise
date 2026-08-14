@@ -89,10 +89,11 @@ function AdminProjects() {
       loadDetail(open.id);
       // Fetch linked inquiry details for AI milestone generation
       if (open.inquiry_id) {
+        const inquiryId = open.inquiry_id;
         (supabase
           .from("project_inquiries") as any)
           .select("details, file_url")
-          .eq("id", open.inquiry_id)
+          .eq("id", inquiryId)
           .maybeSingle()
           .then(({ data: inq, error }: any) => {
             if (error) {
@@ -100,7 +101,7 @@ function AdminProjects() {
               supabase
                 .from("project_inquiries")
                 .select("details")
-                .eq("id", open.inquiry_id)
+                .eq("id", inquiryId)
                 .maybeSingle()
                 .then(({ data: fallbackInq }) => {
                   setInquiryDetails(fallbackInq?.details ?? "");

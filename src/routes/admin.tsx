@@ -21,6 +21,7 @@ import {
   LogOut,
   BookOpen,
   GraduationCap,
+  ShieldAlert,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -51,6 +52,7 @@ const NAV: { to: string; label: string; icon: LucideIcon; exact?: boolean }[] = 
   { to: "/admin/announcements", label: "Messages", icon: Megaphone },
   { to: "/admin/reports", label: "Reports", icon: FileText },
   { to: "/admin/system-health", label: "System Health", icon: HeartPulse },
+  { to: "/admin/audit-logs", label: "Audit Logs", icon: ShieldAlert },
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ];
 

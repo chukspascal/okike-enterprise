@@ -168,7 +168,7 @@ export async function getCourses(): Promise<PublicCourse[]> {
 }
 
 export async function getTracks(): Promise<PublicTrack[]> {
-  const { data } = await supabase
+  const { data } = await (supabase as any)
     .from("tracks")
     .select("*")
     .eq("published", true)
@@ -182,7 +182,7 @@ export async function getTracks(): Promise<PublicTrack[]> {
 }
 
 export async function getPhysicalClasses(): Promise<PublicPhysicalClass[]> {
-  const { data } = await supabase
+  const { data } = await (supabase as any)
     .from("physical_classes")
     .select("*")
     .eq("published", true)
