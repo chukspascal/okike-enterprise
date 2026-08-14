@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { runScraperCore } from "@/lib/scraper.functions";
+import { runScraperCore } from "@/lib/scraper.server";
 
 export const Route = createFileRoute("/api/cron/scrape-issues")({
   server: {
