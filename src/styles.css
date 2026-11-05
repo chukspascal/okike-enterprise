@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
@@ -61,16 +62,50 @@
   --color-contrast: var(--contrast);
   --color-contrast-foreground: var(--contrast-foreground);
   --color-brand-text: var(--brand-text);
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Burnods", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Bricolage Grotesque", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Bricolage Grotesque", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
-:root,
-.dark {
+:root {
   --radius: 0.75rem;
 
-  /* Official OKIKE Studio Palette */
+  /* Official OKIKE Studio Light Palette (Warm Paper & Deep Ink) */
+  --surface: #f7f7f2;
+  --ink: #0e0e0e;
+  --ink-muted: #595954;
+
+  --brand: #e3ee32;
+  --brand-foreground: #0e0e0e;
+  --brand-text: #0e0e0e;
+  --brand-soft: #c4b0f0;
+
+  --contrast: #ffffff;
+  --contrast-foreground: #0e0e0e;
+
+  --background: #f7f7f2;
+  --foreground: #0e0e0e;
+  --card: #ffffff;
+  --card-foreground: #0e0e0e;
+  --popover: #ffffff;
+  --popover-foreground: #0e0e0e;
+  --primary: #0e0e0e;
+  --primary-foreground: #ffffff;
+  --secondary: #ebebe5;
+  --secondary-foreground: #0e0e0e;
+  --muted: #ebebe5;
+  --muted-foreground: #595954;
+  --accent: #e5e5df;
+  --accent-foreground: #0e0e0e;
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: rgba(0, 0, 0, 0.14);
+  --ring: #0e0e0e;
+}
+
+.dark {
+  /* Official OKIKE Studio Dark Palette (Deep Onyx Ink) */
   --surface: #0e0e0e;
   --ink: #ffffff;
   --ink-muted: rgba(255, 255, 255, 0.72);
@@ -84,8 +119,8 @@
   --contrast: #171716;
   --contrast-foreground: #ffffff;
 
-  --background: var(--surface);
-  --foreground: var(--ink);
+  --background: #0e0e0e;
+  --foreground: #ffffff;
   --card: #151514;
   --card-foreground: #ffffff;
   --popover: #151514;
@@ -126,10 +161,10 @@
   }
 }
 
-/* Utility: Burnods display font — reserved for hero & primary display titles */
+/* Utility: Bricolage Grotesque display font — Studio neo-grotesque styling */
 .font-display {
-  font-family: "Burnods", "Inter", ui-sans-serif, system-ui, sans-serif;
-  letter-spacing: 0.02em;
+  font-family: "Bricolage Grotesque", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .font-mono {

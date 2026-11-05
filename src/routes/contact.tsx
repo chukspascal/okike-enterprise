@@ -59,21 +59,21 @@ function ContactPage() {
 
   return (
     <SiteLayout>
-      {/* ─── HERO (FLAT STUDIO BLACK + #E3EE32 — NO GRADIENTS/BLURS) ─── */}
-      <section className="relative overflow-hidden bg-[#0E0E0E] border-b border-white/10 py-20 md:py-24 px-6">
+      {/* ─── HERO (FLAT STUDIO BLACK/LIGHT + #E3EE32 — NO GRADIENTS/BLURS) ─── */}
+      <section className="relative overflow-hidden bg-[#f7f7f2] dark:bg-[#0E0E0E] border-b border-black/10 dark:border-white/10 py-20 md:py-24 px-6 transition-colors">
         <div className="relative max-w-6xl mx-auto">
           <div className="mb-6">
-            <span className="inline-flex items-center gap-3 text-xs font-mono uppercase tracking-[0.2em] text-white/60">
-              <span className="w-8 h-px bg-[#E3EE32]" />
+            <span className="inline-flex items-center gap-3 text-xs font-mono uppercase tracking-[0.2em] text-black/60 dark:text-white/60">
+              <span className="w-8 h-px bg-[#0e0e0e] dark:bg-[#E3EE32]" />
               Direct Dispatch
             </span>
           </div>
 
-          <h1 className="font-display text-[clamp(3rem,7.5vw,6rem)] leading-[0.94] tracking-wide uppercase text-white max-w-3xl">
-            Start a conversation with <span className="text-[#E3EE32]">OKIKE.</span>
+          <h1 className="font-display text-[clamp(3rem,7.5vw,6rem)] leading-[0.94] tracking-tight uppercase text-[#0e0e0e] dark:text-white max-w-3xl">
+            Start a conversation with <span className="text-[#0e0e0e] dark:text-[#E3EE32]">OKIKE.</span>
           </h1>
 
-          <p className="mt-5 text-base md:text-lg text-white/75 max-w-xl leading-relaxed">
+          <p className="mt-5 text-base md:text-lg text-black/75 dark:text-white/75 max-w-xl leading-relaxed">
             Whether you want to partner with OKIKE Studio on custom software, inquire about startup
             incubation, or apply to OKIKE Academy, our coordinators respond within 24 hours.
           </p>
@@ -84,56 +84,56 @@ function ContactPage() {
               href="https://studio.okikeenterprises.com/enquiry"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-[#151514] rounded-2xl border border-white/10 hover:border-[#E3EE32] p-6 flex flex-col justify-between gap-4 transition-colors group"
+              className="bg-white dark:bg-[#151514] rounded-2xl border border-black/10 dark:border-white/10 hover:border-black dark:hover:border-[#E3EE32] p-6 flex flex-col justify-between gap-4 transition-colors group shadow-xs"
             >
               <div>
-                <div className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#E3EE32]">
+                <div className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#0e0e0e] dark:text-[#E3EE32]">
                   01 // Client Projects
                 </div>
-                <div className="text-lg font-bold text-white mt-1">Scope via OKIKE Studio</div>
-                <p className="text-xs text-white/70 mt-1 leading-relaxed">
+                <div className="text-lg font-bold text-[#0e0e0e] dark:text-white mt-1 font-display">Scope via OKIKE Studio</div>
+                <p className="text-xs text-black/70 dark:text-white/70 mt-1 leading-relaxed">
                   Configure timeline, package specifications, and pricing on our live Studio portal.
                 </p>
               </div>
-              <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#E3EE32] group-hover:text-white">
+              <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#0e0e0e] dark:text-[#E3EE32] group-hover:underline">
                 Studio Enquiry <ArrowUpRight className="size-3.5" />
               </span>
             </a>
 
             <Link
               to="/enroll"
-              className="bg-[#151514] rounded-2xl border border-white/10 hover:border-[#E3EE32] p-6 flex flex-col justify-between gap-4 transition-colors group"
+              className="bg-white dark:bg-[#151514] rounded-2xl border border-black/10 dark:border-white/10 hover:border-black dark:hover:border-[#E3EE32] p-6 flex flex-col justify-between gap-4 transition-colors group shadow-xs"
             >
               <div>
-                <div className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#E3EE32]">
+                <div className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#0e0e0e] dark:text-[#E3EE32]">
                   02 // Students &amp; Cohorts
                 </div>
-                <div className="text-lg font-bold text-white mt-1">Apply to OKIKE Academy</div>
-                <p className="text-xs text-white/70 mt-1 leading-relaxed">
+                <div className="text-lg font-bold text-[#0e0e0e] dark:text-white mt-1 font-display">Apply to OKIKE Academy</div>
+                <p className="text-xs text-black/70 dark:text-white/70 mt-1 leading-relaxed">
                   Register for upcoming terms in Web, UI/UX, Python, and the Synergy Summit.
                 </p>
               </div>
-              <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#E3EE32] group-hover:text-white">
+              <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#0e0e0e] dark:text-[#E3EE32] group-hover:underline">
                 Academy Application <ArrowUpRight className="size-3.5" />
               </span>
             </Link>
 
             <a
               href="mailto:okikeenterprises@gmail.com"
-              className="bg-[#E3EE32] text-[#0E0E0E] rounded-2xl p-6 flex flex-col justify-between gap-4 transition-colors group"
+              className="bg-[#0e0e0e] text-[#e3ee32] dark:bg-[#E3EE32] dark:text-[#0E0E0E] rounded-2xl p-6 flex flex-col justify-between gap-4 transition-colors group shadow-xs"
             >
               <div>
-                <div className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#0E0E0E]/85">
+                <div className="font-mono text-[11px] font-semibold uppercase tracking-wider text-white/85 dark:text-[#0E0E0E]/85">
                   03 // Direct Email
                 </div>
-                <div className="text-lg font-bold text-[#0E0E0E] mt-1 break-all">
+                <div className="text-lg font-bold text-white dark:text-[#0E0E0E] mt-1 break-all font-display">
                   okikeenterprises@gmail.com
                 </div>
-                <p className="text-xs text-[#0E0E0E]/85 mt-1 leading-relaxed">
+                <p className="text-xs text-white/85 dark:text-[#0E0E0E]/85 mt-1 leading-relaxed">
                   Institutional partnerships, venture relations, and general inquiries.
                 </p>
               </div>
-              <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#0E0E0E]">
+              <span className="inline-flex items-center gap-1 text-xs font-semibold text-white dark:text-[#0E0E0E]">
                 Write Email <ArrowUpRight className="size-3.5" />
               </span>
             </a>
@@ -142,40 +142,40 @@ function ContactPage() {
       </section>
 
       {/* ─── FORM & CHANNELS ─── */}
-      <section className="py-24 px-6 bg-[#0E0E0E] text-white">
+      <section className="py-24 px-6 bg-[#f7f7f2] dark:bg-[#0E0E0E] text-[#0e0e0e] dark:text-white transition-colors">
         <div className="max-w-6xl mx-auto grid lg:grid-cols-12 gap-12">
           <div className="lg:col-span-5 flex flex-col gap-5">
-            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-[#E3EE32]">
+            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-[#0e0e0e] dark:text-[#E3EE32]">
               Send a Message
             </span>
-            <h2 className="font-display text-4xl uppercase tracking-wide text-white">
+            <h2 className="font-display text-4xl uppercase tracking-tight text-[#0e0e0e] dark:text-white">
               Direct Inquiries.
             </h2>
-            <p className="text-sm text-white/75 leading-relaxed">
+            <p className="text-sm text-black/75 dark:text-white/75 leading-relaxed">
               Use the form to send a message directly to the coordination team. Select the branch
               you are inquiring about so it lands on the appropriate desk.
             </p>
 
-            <div className="space-y-3.5 pt-4 border-t border-white/10 text-xs text-white/75">
+            <div className="space-y-3.5 pt-4 border-t border-black/10 dark:border-white/10 text-xs text-black/75 dark:text-white/75">
               <div className="flex items-center gap-3">
-                <Mail className="size-4 text-[#E3EE32] shrink-0" />
+                <Mail className="size-4 text-[#0e0e0e] dark:text-[#E3EE32] shrink-0" />
                 <span>okikeenterprises@gmail.com</span>
               </div>
               <div className="flex items-center gap-3">
-                <MapPin className="size-4 text-[#E3EE32] shrink-0" />
+                <MapPin className="size-4 text-[#0e0e0e] dark:text-[#E3EE32] shrink-0" />
                 <span>Nigeria — Operating globally</span>
               </div>
               <div className="flex items-center gap-3">
-                <MessageSquare className="size-4 text-[#E3EE32] shrink-0" />
+                <MessageSquare className="size-4 text-[#0e0e0e] dark:text-[#E3EE32] shrink-0" />
                 <span>Response time: Within 24 hours</span>
               </div>
             </div>
           </div>
 
-          <div className="lg:col-span-7 bg-[#151514] rounded-2xl border border-white/10 p-7 sm:p-10">
+          <div className="lg:col-span-7 bg-white dark:bg-[#151514] rounded-2xl border border-black/10 dark:border-white/10 p-7 sm:p-10 shadow-xs">
             <form onSubmit={onSubmit} className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
-                <span className="text-xs font-semibold text-white">Inquiry Category</span>
+                <span className="text-xs font-semibold text-[#0e0e0e] dark:text-white">Inquiry Category</span>
                 <div className="grid grid-cols-3 gap-2">
                   {[
                     { id: "general", label: "General" },
@@ -188,8 +188,8 @@ function ContactPage() {
                       onClick={() => setCategory(cat.id as any)}
                       className={`py-2.5 px-3 rounded-lg text-xs font-semibold border transition-colors ${
                         category === cat.id
-                          ? "bg-[#E3EE32] text-[#0E0E0E] border-[#E3EE32]"
-                          : "bg-[#1a1a18] text-white/75 border-white/15 hover:border-[#E3EE32]"
+                          ? "bg-[#0e0e0e] text-[#e3ee32] border-[#0e0e0e] dark:bg-[#E3EE32] dark:text-[#0E0E0E] dark:border-[#E3EE32]"
+                          : "bg-black/5 dark:bg-[#1a1a18] text-black/75 dark:text-white/75 border-black/10 dark:border-white/15 hover:border-black dark:hover:border-[#E3EE32]"
                       }`}
                     >
                       {cat.label}
@@ -218,7 +218,7 @@ function ContactPage() {
               <button
                 type="submit"
                 disabled={busy}
-                className="bg-[#E3EE32] hover:bg-[#d4df28] text-[#0E0E0E] py-3.5 px-7 rounded-lg font-semibold text-xs uppercase tracking-wider transition-colors disabled:opacity-50 self-start inline-flex items-center gap-2"
+                className="bg-[#0e0e0e] text-[#e3ee32] hover:bg-black dark:bg-[#E3EE32] dark:hover:bg-[#d4df28] dark:text-[#0E0E0E] py-3.5 px-7 rounded-lg font-semibold text-xs uppercase tracking-wider transition-colors disabled:opacity-50 self-start inline-flex items-center gap-2"
               >
                 <span>{busy ? "Sending…" : "Send Message"}</span>
                 <Send className="size-3.5" />
@@ -247,16 +247,16 @@ export function Field({
 } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-xs font-semibold text-white">
+      <span className="text-xs font-semibold text-[#0e0e0e] dark:text-white">
         {label}
-        {required && <span className="text-[#E3EE32]"> *</span>}
+        {required && <span className="text-[#0e0e0e] dark:text-[#E3EE32]"> *</span>}
       </span>
       <input
         name={name}
         type={type}
         required={required}
         placeholder={placeholder}
-        className="bg-[#0E0E0E] rounded-lg border border-white/15 px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:border-[#E3EE32] transition-colors"
+        className="bg-black/[0.03] dark:bg-[#0E0E0E] rounded-lg border border-black/15 dark:border-white/15 px-4 py-3 text-sm text-[#0e0e0e] dark:text-white placeholder:text-black/35 dark:placeholder:text-white/35 focus:outline-none focus:border-[#0e0e0e] dark:focus:border-[#E3EE32] transition-colors"
         {...rest}
       />
     </label>
@@ -277,15 +277,15 @@ export function TextArea({
 } & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-xs font-semibold text-white">
+      <span className="text-xs font-semibold text-[#0e0e0e] dark:text-white">
         {label}
-        {required && <span className="text-[#E3EE32]"> *</span>}
+        {required && <span className="text-[#0e0e0e] dark:text-[#E3EE32]"> *</span>}
       </span>
       <textarea
         name={name}
         required={required}
         placeholder={placeholder}
-        className="bg-[#0E0E0E] rounded-lg border border-white/15 px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:border-[#E3EE32] transition-colors resize-y"
+        className="bg-black/[0.03] dark:bg-[#0E0E0E] rounded-lg border border-black/15 dark:border-white/15 px-4 py-3 text-sm text-[#0e0e0e] dark:text-white placeholder:text-black/35 dark:placeholder:text-white/35 focus:outline-none focus:border-[#0e0e0e] dark:focus:border-[#E3EE32] transition-colors resize-y"
         {...rest}
       />
     </label>
@@ -306,15 +306,15 @@ export function Select({
 } & React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-xs font-semibold text-white">
+      <span className="text-xs font-semibold text-[#0e0e0e] dark:text-white">
         {label}
-        {required && <span className="text-[#E3EE32]"> *</span>}
+        {required && <span className="text-[#0e0e0e] dark:text-[#E3EE32]"> *</span>}
       </span>
       <select
         name={name}
         required={required}
         defaultValue=""
-        className="bg-[#0E0E0E] rounded-lg border border-white/15 px-4 py-3 text-sm text-white focus:outline-none focus:border-[#E3EE32] transition-colors"
+        className="bg-black/[0.03] dark:bg-[#0E0E0E] rounded-lg border border-black/15 dark:border-white/15 px-4 py-3 text-sm text-[#0e0e0e] dark:text-white focus:outline-none focus:border-[#0e0e0e] dark:focus:border-[#E3EE32] transition-colors"
         {...rest}
       >
         <option value="" disabled>

@@ -45,7 +45,7 @@ const BRANCHES = [
     cta: "Scope a startup MVP →",
     href: "https://studio.okikeenterprises.com/enquiry?package=custom-software",
     external: true,
-    outerBg: "bg-[#151514] border-[#E3EE32]/40",
+    outerBg: "bg-white dark:bg-[#151514] border-black/10 dark:border-[#E3EE32]/40 shadow-sm",
     panelBg: "bg-[#E3EE32] text-[#0E0E0E]",
     panelTitleColor: "text-[#0E0E0E]",
     panelItemColor: "text-[#0E0E0E]/90",
@@ -69,7 +69,7 @@ const BRANCHES = [
     cta: "Visit OKIKE Studio ↗",
     href: "https://studio.okikeenterprises.com",
     external: true,
-    outerBg: "bg-[#171716] border-white/20",
+    outerBg: "bg-[#f2f2ec] dark:bg-[#171716] border-black/10 dark:border-white/20 shadow-sm",
     panelBg: "bg-[#C4B0F0] text-[#0E0E0E]",
     panelTitleColor: "text-[#0E0E0E]",
     panelItemColor: "text-[#0E0E0E]/90",
@@ -93,7 +93,7 @@ const BRANCHES = [
     cta: "Explore the Academy →",
     href: "/learn",
     external: false,
-    outerBg: "bg-[#151514] border-[#E3EE32]/45",
+    outerBg: "bg-white dark:bg-[#151514] border-black/10 dark:border-[#E3EE32]/45 shadow-sm",
     panelBg: "bg-[#E3EE32] text-[#0E0E0E]",
     panelTitleColor: "text-[#0E0E0E]",
     panelItemColor: "text-[#0E0E0E]/90",
@@ -178,12 +178,18 @@ function AsciiSphereCanvas() {
       }
 
       points.sort((a, b) => a.z - b.z);
+      const isDark =
+        typeof document !== "undefined" && document.documentElement.classList.contains("dark");
       for (const pt of points) {
         const alpha = 0.14 + (pt.z + 1) * 0.42;
         if (pt.z > 0.35) {
-          ctx.fillStyle = `rgba(227, 238, 50, ${alpha.toFixed(3)})`;
+          ctx.fillStyle = isDark
+            ? `rgba(227, 238, 50, ${alpha.toFixed(3)})`
+            : `rgba(14, 14, 14, ${(alpha * 0.95).toFixed(3)})`;
         } else {
-          ctx.fillStyle = `rgba(255, 255, 255, ${(alpha * 0.72).toFixed(3)})`;
+          ctx.fillStyle = isDark
+            ? `rgba(255, 255, 255, ${(alpha * 0.72).toFixed(3)})`
+            : `rgba(14, 14, 14, ${(alpha * 0.35).toFixed(3)})`;
         }
         ctx.fillText(pt.char, pt.x, pt.y);
       }
@@ -227,11 +233,11 @@ function HomePage() {
     <>
       <SiteLayout>
         {/* ─── 1. FLAT ARCHITECTURAL HERO STAGE (ZERO GRADIENTS / BLURS) ─── */}
-        <div className="relative min-h-[calc(100svh-4rem)] flex flex-col justify-between overflow-hidden bg-[#0E0E0E] border-b border-white/10">
+        <div className="relative min-h-[calc(100svh-4rem)] flex flex-col justify-between overflow-hidden bg-[#f7f7f2] dark:bg-[#0E0E0E] border-b border-black/10 dark:border-white/10 transition-colors">
           {/* 3D Rotating ASCII Sphere Canvas on the Right */}
           <div
             aria-hidden
-            className="absolute right-0 lg:right-12 top-1/2 -translate-y-1/2 w-[460px] h-[460px] lg:w-[640px] lg:h-[640px] opacity-55 pointer-events-none"
+            className="absolute right-0 lg:right-12 top-1/2 -translate-y-1/2 w-[460px] h-[460px] lg:w-[640px] lg:h-[640px] opacity-60 dark:opacity-55 pointer-events-none"
           >
             <AsciiSphereCanvas />
           </div>
@@ -244,8 +250,8 @@ function HomePage() {
                 mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
-              <span className="inline-flex items-center gap-3 text-xs sm:text-sm font-mono uppercase tracking-[0.2em] text-white/60">
-                <span className="w-8 h-px bg-[#E3EE32]" />
+              <span className="inline-flex items-center gap-3 text-xs sm:text-sm font-mono uppercase tracking-[0.2em] text-black/60 dark:text-white/60">
+                <span className="w-8 h-px bg-[#0e0e0e] dark:bg-[#E3EE32]" />
                 OKIKE Enterprises · Parent Institution
               </span>
             </div>
@@ -253,14 +259,14 @@ function HomePage() {
             {/* Refined Institutional Headline with Balanced Typography */}
             <div className="mb-10 max-w-4xl">
               <h1
-                className={`font-display text-[clamp(2.5rem,5.5vw,4.8rem)] leading-[0.98] tracking-normal uppercase text-white transition-all duration-1000 ${
+                className={`font-display text-[clamp(2.5rem,5.5vw,4.8rem)] leading-[0.98] tracking-tight uppercase text-[#0e0e0e] dark:text-white transition-all duration-1000 ${
                   mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                 }`}
               >
                 <span className="block">The institution</span>
                 <span className="block mt-2">
                   to build{" "}
-                  <span className="relative inline-block text-[#E3EE32]">
+                  <span className="relative inline-block text-[#0e0e0e] dark:text-[#E3EE32]">
                     <span key={wordIdx} className="inline-flex">
                       {HERO_WORDS[wordIdx].split("").map((char, idx) => (
                         <span
@@ -272,7 +278,7 @@ function HomePage() {
                         </span>
                       ))}
                     </span>
-                    <span className="absolute -bottom-1 left-0 right-0 h-2 bg-[#E3EE32]/30" />
+                    <span className="absolute -bottom-1 left-0 right-0 h-2 bg-[#E3EE32]/40" />
                   </span>
                 </span>
               </h1>
@@ -281,7 +287,7 @@ function HomePage() {
             {/* 2-Column Subheadline + Solid CTAs */}
             <div className="grid lg:grid-cols-12 gap-8 items-end">
               <p
-                className={`lg:col-span-7 text-base lg:text-lg text-white/70 leading-relaxed max-w-xl transition-all duration-700 delay-150 ${
+                className={`lg:col-span-7 text-base lg:text-lg text-black/75 dark:text-white/70 leading-relaxed max-w-xl transition-all duration-700 delay-150 ${
                   mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                 }`}
               >
@@ -291,14 +297,14 @@ function HomePage() {
                   href="https://studio.okikeenterprises.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white font-medium underline decoration-[#E3EE32] underline-offset-4 hover:text-[#E3EE32] transition-colors"
+                  className="text-[#0e0e0e] dark:text-white font-medium underline decoration-[#E3EE32] underline-offset-4 hover:opacity-80 transition"
                 >
                   OKIKE Studio
                 </a>
                 , and training engineers inside{" "}
                 <Link
                   to="/learn"
-                  className="text-white font-medium underline decoration-[#E3EE32] underline-offset-4 hover:text-[#E3EE32] transition-colors"
+                  className="text-[#0e0e0e] dark:text-white font-medium underline decoration-[#E3EE32] underline-offset-4 hover:opacity-80 transition"
                 >
                   OKIKE Academy
                 </Link>
@@ -314,14 +320,14 @@ function HomePage() {
                   href="https://studio.okikeenterprises.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group inline-flex items-center justify-center gap-2 bg-[#E3EE32] hover:bg-[#d4df28] text-[#0E0E0E] font-semibold px-6 h-12 text-xs uppercase tracking-wider rounded-lg transition-colors"
+                  className="group inline-flex items-center justify-center gap-2 bg-[#0e0e0e] text-[#e3ee32] hover:bg-black dark:bg-[#E3EE32] dark:hover:bg-[#d4df28] dark:text-[#0E0E0E] font-semibold px-6 h-12 text-xs uppercase tracking-wider rounded-lg transition-colors"
                 >
                   <span>Launch OKIKE Studio</span>
                   <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </a>
                 <Link
                   to="/learn"
-                  className="inline-flex items-center justify-center gap-2 h-12 px-6 text-xs font-semibold uppercase tracking-wider rounded-lg border border-white/20 text-white hover:border-[#E3EE32] hover:text-[#E3EE32] transition-colors"
+                  className="inline-flex items-center justify-center gap-2 h-12 px-6 text-xs font-semibold uppercase tracking-wider rounded-lg border border-black/20 text-[#0e0e0e] hover:border-black dark:border-white/20 dark:text-white dark:hover:border-[#E3EE32] dark:hover:text-[#E3EE32] transition-colors"
                 >
                   <span>Explore Academy</span>
                 </Link>
@@ -330,35 +336,35 @@ function HomePage() {
           </div>
 
           {/* Bottom Integrated Proof & Partners Marquee Strip (Solid Flat Edges) */}
-          <div className="relative z-10 border-t border-white/10 bg-[#121211] py-6">
+          <div className="relative z-10 border-t border-black/10 dark:border-white/10 bg-[#ebebe5] dark:bg-[#121211] py-6 transition-colors">
             <div className="relative w-full overflow-hidden">
               <div className="animate-marquee items-center gap-16 whitespace-nowrap">
                 {[0, 1].map((dup) => (
                   <div key={dup} className="flex items-center gap-16 shrink-0">
                     {/* Ecosystem Metrics */}
                     <div className="flex items-baseline gap-3.5">
-                      <span className="text-3xl lg:text-4xl font-display text-white">2–3 wks</span>
-                      <span className="text-xs text-white/55">
+                      <span className="text-3xl lg:text-4xl font-display text-[#0e0e0e] dark:text-white">2–3 wks</span>
+                      <span className="text-xs text-black/60 dark:text-white/55">
                         average MVP delivery
-                        <span className="block font-mono text-[10px] text-[#E3EE32] uppercase tracking-widest mt-0.5">
+                        <span className="block font-mono text-[10px] text-[#0e0e0e] dark:text-[#E3EE32] uppercase tracking-widest mt-0.5">
                           01 / OKIKE VENTURES
                         </span>
                       </span>
                     </div>
                     <div className="flex items-baseline gap-3.5">
-                      <span className="text-3xl lg:text-4xl font-display text-white">100+</span>
-                      <span className="text-xs text-white/55">
+                      <span className="text-3xl lg:text-4xl font-display text-[#0e0e0e] dark:text-white">100+</span>
+                      <span className="text-xs text-black/60 dark:text-white/55">
                         active portal engineers
-                        <span className="block font-mono text-[10px] text-[#E3EE32] uppercase tracking-widest mt-0.5">
+                        <span className="block font-mono text-[10px] text-[#0e0e0e] dark:text-[#E3EE32] uppercase tracking-widest mt-0.5">
                           03 / OKIKE ACADEMY
                         </span>
                       </span>
                     </div>
                     <div className="flex items-baseline gap-3.5">
-                      <span className="text-3xl lg:text-4xl font-display text-white">3 Branches</span>
-                      <span className="text-xs text-white/55">
+                      <span className="text-3xl lg:text-4xl font-display text-[#0e0e0e] dark:text-white">3 Branches</span>
+                      <span className="text-xs text-black/60 dark:text-white/55">
                         unified execution system
-                        <span className="block font-mono text-[10px] text-[#E3EE32] uppercase tracking-widest mt-0.5">
+                        <span className="block font-mono text-[10px] text-[#0e0e0e] dark:text-[#E3EE32] uppercase tracking-widest mt-0.5">
                           02 / OKIKE STUDIO
                         </span>
                       </span>
@@ -371,20 +377,20 @@ function HomePage() {
                         href={p.url || "#"}
                         target={p.url ? "_blank" : undefined}
                         rel="noopener noreferrer"
-                        className="group flex items-center gap-3.5 px-4 py-1.5 rounded-lg border border-white/10 bg-[#151514] hover:border-[#E3EE32] transition-colors"
+                        className="group flex items-center gap-3.5 px-4 py-1.5 rounded-lg border border-black/10 dark:border-white/10 bg-white dark:bg-[#151514] hover:border-black dark:hover:border-[#E3EE32] transition-colors shadow-xs"
                       >
                         {p.logo_url && (
                           <img
                             src={p.logo_url}
                             alt={p.name}
-                            className="h-7 max-w-[110px] w-auto object-contain brightness-125"
+                            className="h-7 max-w-[110px] w-auto object-contain dark:brightness-125"
                           />
                         )}
                         <div>
-                          <span className="block font-display text-xl tracking-wide text-white group-hover:text-[#E3EE32] transition-colors">
+                          <span className="block font-display text-xl tracking-wide text-[#0e0e0e] dark:text-white group-hover:text-black dark:group-hover:text-[#E3EE32] transition-colors">
                             {p.name}
                           </span>
-                          <span className="block font-mono text-[9px] uppercase tracking-widest text-white/45">
+                          <span className="block font-mono text-[9px] uppercase tracking-widest text-black/50 dark:text-white/45">
                             VERIFIED PARTNER
                           </span>
                         </div>
@@ -401,18 +407,18 @@ function HomePage() {
         <StackedBranches />
 
         {/* ─── 3. ECOSYSTEM PROOF & SUMMIT BENTO ─── */}
-        <section className="py-24 px-6 bg-[#0E0E0E] border-t border-white/10">
+        <section className="py-24 px-6 bg-[#f7f7f2] dark:bg-[#0E0E0E] border-t border-black/10 dark:border-white/10 transition-colors">
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
               <div>
-                <div className="text-xs font-mono font-semibold uppercase tracking-widest text-[#E3EE32] mb-2">
+                <div className="text-xs font-mono font-semibold uppercase tracking-widest text-[#0e0e0e] dark:text-[#E3EE32] mb-2">
                   Inside the Ecosystem
                 </div>
-                <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
+                <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#0e0e0e] dark:text-white font-display">
                   Built to ship products and grow engineers.
                 </h2>
               </div>
-              <p className="text-sm text-white/70 max-w-sm">
+              <p className="text-sm text-black/75 dark:text-white/70 max-w-sm">
                 Every branch of OKIKE reinforces the others—our Studio engineers mentor our Academy
                 cohorts, and our top graduates build alongside our venture team.
               </p>
@@ -420,18 +426,18 @@ function HomePage() {
 
             <div className="grid md:grid-cols-12 gap-6">
               {/* Bento 1: Studio */}
-              <div className="md:col-span-4 rounded-2xl bg-[#151514] border border-white/10 hover:border-[#E3EE32] p-7 flex flex-col justify-between gap-8 transition-colors">
+              <div className="md:col-span-4 rounded-2xl bg-white dark:bg-[#151514] border border-black/10 dark:border-white/10 hover:border-black dark:hover:border-[#E3EE32] p-7 flex flex-col justify-between gap-8 transition-colors shadow-xs">
                 <div>
-                  <div className="size-10 rounded-xl bg-[#E3EE32]/15 text-[#E3EE32] flex items-center justify-center mb-5">
+                  <div className="size-10 rounded-xl bg-black/5 dark:bg-[#E3EE32]/15 text-[#0e0e0e] dark:text-[#E3EE32] flex items-center justify-center mb-5">
                     <Code2 className="size-5" />
                   </div>
-                  <div className="font-mono text-xs font-semibold text-[#E3EE32] uppercase tracking-wider">
+                  <div className="font-mono text-xs font-semibold text-[#0e0e0e] dark:text-[#E3EE32] uppercase tracking-wider">
                     OKIKE Studio
                   </div>
-                  <h3 className="text-xl font-bold text-white mt-1">
+                  <h3 className="text-xl font-bold text-[#0e0e0e] dark:text-white mt-1">
                     Dedicated Client Platform
                   </h3>
-                  <p className="text-sm text-white/70 mt-2 leading-relaxed">
+                  <p className="text-sm text-black/70 dark:text-white/70 mt-2 leading-relaxed">
                     Scope fixed-price packages, review case studies, and track active sprints on our
                     dedicated Studio site.
                   </p>
@@ -440,55 +446,55 @@ function HomePage() {
                   href="https://studio.okikeenterprises.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#E3EE32] hover:text-white transition"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#0e0e0e] dark:text-[#E3EE32] hover:underline transition"
                 >
                   studio.okikeenterprises.com <ArrowUpRight className="size-4" />
                 </a>
               </div>
 
               {/* Bento 2: Academy Portal */}
-              <div className="md:col-span-4 rounded-2xl bg-[#151514] border border-white/10 hover:border-[#E3EE32] p-7 flex flex-col justify-between gap-8 transition-colors">
+              <div className="md:col-span-4 rounded-2xl bg-white dark:bg-[#151514] border border-black/10 dark:border-white/10 hover:border-black dark:hover:border-[#E3EE32] p-7 flex flex-col justify-between gap-8 transition-colors shadow-xs">
                 <div>
-                  <div className="size-10 rounded-xl bg-[#E3EE32]/15 text-[#E3EE32] flex items-center justify-center mb-5">
+                  <div className="size-10 rounded-xl bg-black/5 dark:bg-[#E3EE32]/15 text-[#0e0e0e] dark:text-[#E3EE32] flex items-center justify-center mb-5">
                     <GraduationCap className="size-5" />
                   </div>
-                  <div className="font-mono text-xs font-semibold text-[#E3EE32] uppercase tracking-wider">
+                  <div className="font-mono text-xs font-semibold text-[#0e0e0e] dark:text-[#E3EE32] uppercase tracking-wider">
                     OKIKE Academy
                   </div>
-                  <h3 className="text-xl font-bold text-white mt-1">
+                  <h3 className="text-xl font-bold text-[#0e0e0e] dark:text-white mt-1">
                     100+ Active Portal Students
                   </h3>
-                  <p className="text-sm text-white/70 mt-2 leading-relaxed">
+                  <p className="text-sm text-black/70 dark:text-white/70 mt-2 leading-relaxed">
                     Registered students learn inside our interactive portal featuring daily coding
                     challenges, live night classes, and mentor reviews.
                   </p>
                 </div>
                 <Link
                   to="/learn"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#E3EE32] hover:text-white transition"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#0e0e0e] dark:text-[#E3EE32] hover:underline transition"
                 >
                   View curriculum tracks <ArrowUpRight className="size-4" />
                 </Link>
               </div>
 
               {/* Bento 3: Computing Synergy Summit */}
-              <div className="md:col-span-4 rounded-2xl bg-[#E3EE32] text-[#0E0E0E] p-7 flex flex-col justify-between gap-8">
+              <div className="md:col-span-4 rounded-2xl bg-[#0e0e0e] text-white dark:bg-[#E3EE32] dark:text-[#0E0E0E] p-7 flex flex-col justify-between gap-8 transition-colors shadow-xs">
                 <div>
-                  <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#0E0E0E] text-[#E3EE32] font-mono text-[11px] font-semibold uppercase tracking-wider mb-5">
+                  <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-white/10 text-white dark:bg-[#0E0E0E] dark:text-[#E3EE32] font-mono text-[11px] font-semibold uppercase tracking-wider mb-5">
                     <Calendar className="size-3.5" />
                     <span>August 1, 2026</span>
                   </div>
-                  <h3 className="text-xl font-bold text-[#0E0E0E]">
+                  <h3 className="text-xl font-bold text-white dark:text-[#0E0E0E]">
                     Computing Synergy Summit
                   </h3>
-                  <p className="text-sm text-[#0E0E0E]/85 mt-2 leading-relaxed">
+                  <p className="text-sm text-white/90 dark:text-[#0E0E0E]/85 mt-2 leading-relaxed">
                     Our flagship bootcamp and summit in Web, UI/UX, Python, and Cybersecurity. Free
                     admission for CS/IT department students.
                   </p>
                 </div>
                 <Link
                   to="/bootcamp"
-                  className="bg-[#0E0E0E] hover:bg-black text-[#E3EE32] px-4 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider inline-flex items-center justify-center gap-1.5 transition"
+                  className="bg-[#E3EE32] hover:bg-white text-[#0E0E0E] dark:bg-[#0E0E0E] dark:hover:bg-black dark:text-[#E3EE32] px-4 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider inline-flex items-center justify-center gap-1.5 transition"
                 >
                   Reserve Summit Pass <ArrowUpRight className="size-4" />
                 </Link>
@@ -496,17 +502,17 @@ function HomePage() {
             </div>
 
             {/* Institutional Partner Grid */}
-            <div className="mt-20 pt-14 border-t border-white/10">
+            <div className="mt-20 pt-14 border-t border-black/10 dark:border-white/10">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
-                  <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#E3EE32]">
+                  <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#0e0e0e] dark:text-[#E3EE32]">
                     Institutional Network
                   </span>
-                  <h3 className="text-xl font-bold text-white mt-1">
+                  <h3 className="text-xl font-bold text-[#0e0e0e] dark:text-white mt-1 font-display">
                     Collaborators, student bodies &amp; client partners.
                   </h3>
                 </div>
-                <span className="text-xs font-mono text-white/40">
+                <span className="text-xs font-mono text-black/50 dark:text-white/40">
                   Akwa Ibom · Lagos · Remote
                 </span>
               </div>
@@ -518,16 +524,16 @@ function HomePage() {
                     href={p.url || "#"}
                     target={p.url ? "_blank" : undefined}
                     rel="noopener noreferrer"
-                    className="group flex flex-col items-center justify-center p-6 rounded-xl bg-[#151514] border border-white/10 hover:border-[#E3EE32] hover:bg-[#1a1a18] transition-all min-h-[110px]"
+                    className="group flex flex-col items-center justify-center p-6 rounded-xl bg-white dark:bg-[#151514] border border-black/10 dark:border-white/10 hover:border-black dark:hover:border-[#E3EE32] hover:bg-black/[0.02] dark:hover:bg-[#1a1a18] transition-all min-h-[110px] shadow-xs"
                   >
                     {p.logo_url ? (
                       <img
                         src={p.logo_url}
                         alt={p.name}
-                        className="h-10 max-w-[120px] w-auto object-contain filter grayscale group-hover:grayscale-0 brightness-150 contrast-125 transition-all mb-2"
+                        className="h-10 max-w-[120px] w-auto object-contain filter grayscale group-hover:grayscale-0 brightness-100 dark:brightness-150 contrast-125 transition-all mb-2"
                       />
                     ) : null}
-                    <span className="text-xs font-mono uppercase tracking-wider text-white/75 group-hover:text-white text-center">
+                    <span className="text-xs font-mono uppercase tracking-wider text-[#0e0e0e] dark:text-white/75 group-hover:text-black dark:group-hover:text-white text-center">
                       {p.name}
                     </span>
                   </a>
@@ -625,7 +631,7 @@ function StackedBranches() {
   };
 
   return (
-    <div id="branches" className="relative bg-[#0E0E0E] px-4 sm:px-6 pt-14 pb-28">
+    <div id="branches" className="relative bg-[#f7f7f2] dark:bg-[#0E0E0E] px-4 sm:px-6 pt-14 pb-28 transition-colors">
       <div className="max-w-6xl mx-auto flex flex-col gap-[14svh]">
         {BRANCHES.map((b, i) => (
           <div
@@ -640,26 +646,26 @@ function StackedBranches() {
             className={`sticky rounded-3xl border will-change-transform ${b.outerBg}`}
           >
             <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 p-7 sm:p-10 lg:p-12 min-h-[480px] lg:min-h-[510px] items-center">
-              {/* Left Column — Crisp White & Lime Accent on Studio Ink Card */}
-              <div className="lg:col-span-6 flex flex-col gap-4 text-white">
-                <div className="text-xs font-semibold tracking-wide text-white">
+              {/* Left Column — Studio Card Content */}
+              <div className="lg:col-span-6 flex flex-col gap-4 text-[#0e0e0e] dark:text-white">
+                <div className="text-xs font-semibold tracking-wide text-[#0e0e0e] dark:text-white">
                   Branch {b.number}{" "}
-                  <span className="text-white/45 font-normal">
+                  <span className="text-black/45 dark:text-white/45 font-normal">
                     of 0{BRANCHES.length}
                   </span>
                 </div>
 
-                <h2 className="font-display text-[clamp(3rem,6.5vw,5.2rem)] leading-[0.95] tracking-wide uppercase text-white">
+                <h2 className="font-display text-[clamp(3rem,6.5vw,5.2rem)] leading-[0.95] tracking-tight uppercase text-[#0e0e0e] dark:text-white">
                   {b.name}
                 </h2>
 
-                <div className="text-sm sm:text-base font-semibold text-[#E3EE32]">
+                <div className="text-sm sm:text-base font-semibold text-[#0e0e0e] dark:text-[#E3EE32]">
                   {b.unit}
                 </div>
 
-                <div className="h-px w-full max-w-sm bg-white/10 my-1" />
+                <div className="h-px w-full max-w-sm bg-black/10 dark:bg-white/10 my-1" />
 
-                <p className="text-sm sm:text-base text-white/75 leading-relaxed max-w-md">
+                <p className="text-sm sm:text-base text-black/75 dark:text-white/75 leading-relaxed max-w-md">
                   {b.description}
                 </p>
 
@@ -669,14 +675,14 @@ function StackedBranches() {
                       href={b.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-[#E3EE32] hover:text-white transition"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0e0e0e] hover:underline dark:text-[#E3EE32] dark:hover:text-white transition"
                     >
                       {b.cta}
                     </a>
                   ) : (
                     <Link
                       to={b.href}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-[#E3EE32] hover:text-white transition"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0e0e0e] hover:underline dark:text-[#E3EE32] dark:hover:text-white transition"
                     >
                       {b.cta}
                     </Link>

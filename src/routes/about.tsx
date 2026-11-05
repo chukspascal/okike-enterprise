@@ -107,22 +107,22 @@ function AboutPage() {
 
   return (
     <SiteLayout>
-      {/* ─── HERO (FLAT STUDIO BLACK + #E3EE32 — NO GRADIENTS/BLURS) ─── */}
-      <section className="relative overflow-hidden bg-[#0E0E0E] border-b border-white/10 py-20 md:py-28 px-6">
+      {/* ─── HERO (FLAT STUDIO BLACK/LIGHT + #E3EE32 — NO GRADIENTS/BLURS) ─── */}
+      <section className="relative overflow-hidden bg-[#f7f7f2] dark:bg-[#0E0E0E] border-b border-black/10 dark:border-white/10 py-20 md:py-28 px-6 transition-colors">
         <div className="relative max-w-6xl mx-auto">
           <div className="mb-6">
-            <span className="inline-flex items-center gap-3 text-xs font-mono uppercase tracking-[0.2em] text-white/60">
-              <span className="w-8 h-px bg-[#E3EE32]" />
+            <span className="inline-flex items-center gap-3 text-xs font-mono uppercase tracking-[0.2em] text-black/60 dark:text-white/60">
+              <span className="w-8 h-px bg-[#0e0e0e] dark:bg-[#E3EE32]" />
               About OKIKE Enterprises
             </span>
           </div>
 
-          <h1 className="font-display text-[clamp(3rem,7.5vw,6rem)] leading-[0.94] tracking-wide uppercase text-white max-w-4xl">
+          <h1 className="font-display text-[clamp(3rem,7.5vw,6rem)] leading-[0.94] tracking-tight uppercase text-[#0e0e0e] dark:text-white max-w-4xl">
             An institution that births{" "}
-            <span className="text-[#E3EE32]">other institutions.</span>
+            <span className="text-[#0e0e0e] dark:text-[#E3EE32]">other institutions.</span>
           </h1>
 
-          <p className="mt-6 text-base md:text-lg text-white/75 max-w-2xl leading-relaxed">
+          <p className="mt-6 text-base md:text-lg text-black/75 dark:text-white/75 max-w-2xl leading-relaxed">
             OKIKE is a culturally intentional creative and technological institute. Rather than
             operating as a traditional agency, we build the technological foundations and human
             capacity that anchor enduring ventures.
@@ -133,14 +133,14 @@ function AboutPage() {
               href="https://studio.okikeenterprises.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="group bg-[#E3EE32] hover:bg-[#d4df28] text-[#0E0E0E] px-6 py-3 rounded-lg inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider transition-colors"
+              className="group bg-[#0e0e0e] text-[#e3ee32] hover:bg-black dark:bg-[#E3EE32] dark:hover:bg-[#d4df28] dark:text-[#0E0E0E] px-6 py-3 rounded-lg inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider transition-colors"
             >
               OKIKE Studio
               <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </a>
             <Link
               to="/learn"
-              className="bg-[#151514] hover:bg-[#1f1f1d] text-white border border-white/15 px-6 py-3 rounded-lg inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider transition-colors"
+              className="bg-white dark:bg-[#151514] hover:bg-black/[0.04] dark:hover:bg-[#1f1f1d] text-[#0e0e0e] dark:text-white border border-black/15 dark:border-white/15 px-6 py-3 rounded-lg inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider transition-colors"
             >
               OKIKE Academy
             </Link>
@@ -149,18 +149,18 @@ function AboutPage() {
       </section>
 
       {/* ─── THREE PILLARS BREAKDOWN ─── */}
-      <section className="py-24 px-6 bg-[#0E0E0E] border-b border-white/10">
+      <section className="py-24 px-6 bg-[#f7f7f2] dark:bg-[#0E0E0E] border-b border-black/10 dark:border-white/10 transition-colors">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
             <div>
-              <span className="font-mono text-xs font-semibold uppercase tracking-widest text-[#E3EE32]">
+              <span className="font-mono text-xs font-semibold uppercase tracking-widest text-[#0e0e0e] dark:text-[#E3EE32]">
                 Operating Structure
               </span>
-              <h2 className="font-display text-4xl md:text-5xl uppercase tracking-wide text-white mt-2">
+              <h2 className="font-display text-4xl md:text-5xl uppercase tracking-tight text-[#0e0e0e] dark:text-white mt-2">
                 Three Specialized Branches.
               </h2>
             </div>
-            <p className="text-sm text-white/70 max-w-xs">
+            <p className="text-sm text-black/75 dark:text-white/70 max-w-xs">
               Organized to serve distinct stakeholders with dedicated focus and zero dilution.
             </p>
           </div>
@@ -171,36 +171,36 @@ function AboutPage() {
               return (
                 <div
                   key={p.number}
-                  className="p-8 rounded-2xl border border-white/10 bg-[#151514] flex flex-col justify-between gap-6 hover:border-[#E3EE32] transition-colors"
+                  className="p-8 rounded-2xl border border-black/10 dark:border-white/10 bg-white dark:bg-[#151514] flex flex-col justify-between gap-6 hover:border-black dark:hover:border-[#E3EE32] transition-colors shadow-xs"
                 >
                   <div className="flex flex-col gap-3">
                     <div className="flex items-center justify-between">
-                      <div className="size-10 rounded-xl bg-[#E3EE32]/15 text-[#E3EE32] flex items-center justify-center">
+                      <div className="size-10 rounded-xl bg-black/5 dark:bg-[#E3EE32]/15 text-[#0e0e0e] dark:text-[#E3EE32] flex items-center justify-center">
                         <Icon className="size-5" />
                       </div>
-                      <span className="font-mono text-xs font-bold text-[#E3EE32]">{p.number}</span>
+                      <span className="font-mono text-xs font-bold text-[#0e0e0e] dark:text-[#E3EE32]">{p.number}</span>
                     </div>
-                    <h3 className="text-xl font-bold text-white mt-2">{p.title}</h3>
-                    <div className="font-mono text-xs font-semibold text-[#E3EE32] uppercase">
+                    <h3 className="text-xl font-bold text-[#0e0e0e] dark:text-white mt-2 font-display">{p.title}</h3>
+                    <div className="font-mono text-xs font-semibold text-[#0e0e0e] dark:text-[#E3EE32] uppercase">
                       {p.headline}
                     </div>
-                    <p className="text-sm text-white/70 leading-relaxed mt-1">{p.desc}</p>
+                    <p className="text-sm text-black/75 dark:text-white/70 leading-relaxed mt-1">{p.desc}</p>
                   </div>
 
-                  <div className="pt-4 border-t border-white/10">
+                  <div className="pt-4 border-t border-black/10 dark:border-white/10">
                     {p.external ? (
                       <a
                         href={p.linkHref}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#E3EE32] hover:text-white transition"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#0e0e0e] dark:text-[#E3EE32] hover:underline transition"
                       >
                         {p.linkText} <ArrowUpRight className="size-4" />
                       </a>
                     ) : (
                       <Link
                         to={p.linkHref}
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#E3EE32] hover:text-white transition"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#0e0e0e] dark:text-[#E3EE32] hover:underline transition"
                       >
                         {p.linkText} <ArrowUpRight className="size-4" />
                       </Link>
@@ -214,13 +214,13 @@ function AboutPage() {
       </section>
 
       {/* ─── INSTITUTIONAL VALUES ─── */}
-      <section className="py-24 px-6 bg-[#0E0E0E] border-b border-white/10">
+      <section className="py-24 px-6 bg-[#f7f7f2] dark:bg-[#0E0E0E] border-b border-black/10 dark:border-white/10 transition-colors">
         <div className="max-w-6xl mx-auto">
           <div className="mb-14">
-            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-[#E3EE32]">
+            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-[#0e0e0e] dark:text-[#E3EE32]">
               Foundational Principles
             </span>
-            <h2 className="font-display text-4xl md:text-5xl uppercase tracking-wide text-white mt-2">
+            <h2 className="font-display text-4xl md:text-5xl uppercase tracking-tight text-[#0e0e0e] dark:text-white mt-2">
               Philosophy &amp; Standards.
             </h2>
           </div>
@@ -229,13 +229,13 @@ function AboutPage() {
             {VALUES.map((val, idx) => (
               <div
                 key={val.title}
-                className="bg-[#151514] rounded-2xl border border-white/10 p-8 flex flex-col gap-2.5"
+                className="bg-white dark:bg-[#151514] rounded-2xl border border-black/10 dark:border-white/10 p-8 flex flex-col gap-2.5 shadow-xs"
               >
-                <span className="font-mono text-xs font-bold text-[#E3EE32]">
+                <span className="font-mono text-xs font-bold text-[#0e0e0e] dark:text-[#E3EE32]">
                   0{idx + 1} // PRINCIPLE
                 </span>
-                <h3 className="text-xl font-bold text-white">{val.title}</h3>
-                <p className="text-sm text-white/70 leading-relaxed">{val.desc}</p>
+                <h3 className="text-xl font-bold text-[#0e0e0e] dark:text-white font-display">{val.title}</h3>
+                <p className="text-sm text-black/75 dark:text-white/70 leading-relaxed">{val.desc}</p>
               </div>
             ))}
           </div>
@@ -243,10 +243,10 @@ function AboutPage() {
       </section>
 
       {/* ─── FOUNDER NOTE ─── */}
-      <section className="py-24 px-6 bg-[#0E0E0E]">
+      <section className="py-24 px-6 bg-[#f7f7f2] dark:bg-[#0E0E0E] transition-colors">
         <div className="max-w-6xl mx-auto grid md:grid-cols-12 gap-12 items-center">
           <div className="md:col-span-5">
-            <div className="rounded-3xl overflow-hidden border border-[#E3EE32]/40 bg-[#151514] p-2">
+            <div className="rounded-3xl overflow-hidden border border-black/10 dark:border-[#E3EE32]/40 bg-white dark:bg-[#151514] p-2 shadow-xs">
               <img
                 src={founderImg}
                 alt="OKIKE Founder"
@@ -256,13 +256,13 @@ function AboutPage() {
           </div>
 
           <div className="md:col-span-7 flex flex-col gap-5">
-            <div className="font-mono text-xs font-semibold uppercase tracking-widest text-[#E3EE32]">
+            <div className="font-mono text-xs font-semibold uppercase tracking-widest text-[#0e0e0e] dark:text-[#E3EE32]">
               Founder Perspective
             </div>
-            <h2 className="font-display text-4xl md:text-5xl uppercase tracking-wide text-white leading-tight">
+            <h2 className="font-display text-4xl md:text-5xl uppercase tracking-tight text-[#0e0e0e] dark:text-white leading-tight">
               Crafted with heritage. Engineered for the global stage.
             </h2>
-            <div className="space-y-4 text-sm md:text-base text-white/75 leading-relaxed">
+            <div className="space-y-4 text-sm md:text-base text-black/75 dark:text-white/75 leading-relaxed">
               <p>
                 {founderInfo?.founder_quote ||
                   `"OKIKE was born from a clear conviction: African technical talent shouldn't merely execute outsourced tasks—it should architect, lead, and birth world-class institutions."`}
@@ -273,11 +273,11 @@ function AboutPage() {
               </p>
             </div>
             <div className="pt-2 flex items-center gap-3">
-              <span className="font-mono text-xs uppercase tracking-widest text-[#E3EE32] font-bold">
+              <span className="font-mono text-xs uppercase tracking-widest text-[#0e0e0e] dark:text-[#E3EE32] font-bold">
                 {founderInfo?.founder_name || "Anas & The OKIKE Collective"}
               </span>
-              <span className="text-xs text-white/40">·</span>
-              <span className="text-xs text-white/60">Nigeria — Global Operations</span>
+              <span className="text-xs text-black/40 dark:text-white/40">·</span>
+              <span className="text-xs text-black/60 dark:text-white/60">Nigeria — Global Operations</span>
             </div>
           </div>
         </div>
