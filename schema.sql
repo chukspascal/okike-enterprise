@@ -688,6 +688,7 @@ ALTER TABLE ONLY public.profiles
     ADD CONSTRAINT profiles_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
 
 
+
 --
 -- Name: project_inquiries project_inquiries_client_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
