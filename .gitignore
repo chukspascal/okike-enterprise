@@ -24,6 +24,9 @@ dist-ssr
 
 # WhatsApp session local storage
 .wwebjs_auth/
+.wwebjs_cache/
+dev-dist/
+check_registrations.*
 
 # Wrangler / Cloudflare
 .wrangler/

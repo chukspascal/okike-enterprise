@@ -1,7 +1,12 @@
 const { createClient } = require('@supabase/supabase-js');
 
-const url = "https://hiqixhmmquugcifdtaep.supabase.co";
-const key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpcWl4aG1tcXV1Z2NpZmR0YWVwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDMwMTA5MywiZXhwIjoyMDk1ODc3MDkzfQ._EIH7IhIJobz6MrTstkniYjImRAIVfGv57WOOcAF-Jg";
+const url = process.env.VITE_SUPABASE_URL || "https://hiqixhmmquugcifdtaep.supabase.co";
+const key = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+
+if (!key) {
+  console.error("Please set SUPABASE_SERVICE_ROLE_KEY environment variable.");
+  process.exit(1);
+}
 
 const supabase = createClient(url, key);
 

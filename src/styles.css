@@ -4,9 +4,26 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Heritage Editorial — OKIKE design system
- * Warm editorial palette with amber/brand accents on a soft off-white surface.
+/* 
+ * OKIKE STUDIO OFFICIAL DESIGN SYSTEM:
+ * Canvas: #0E0E0E (Deep Onyx Ink) / Secondary: #161616 (Subtle Card Surface)
+ * Accent/Action: #E3EE32 (Electric Studio Lime / Action Primary)
+ * Accent Companion: #C4B0F0 (Soft Lilac / Studio Secondary)
+ * Paper Light Tint: #F7F7F2
+ * Border: #2A2A28 / rgba(255, 255, 255, 0.12)
+ * Pure White Text: #FFFFFF / Muted: #A0A09A
  */
+
+@font-face {
+  font-family: "Burnods";
+  src:
+    url("/fonts/BURNODS.ttf") format("truetype"),
+    local("Burnods"),
+    local("BURNODS");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -44,84 +61,48 @@
   --color-contrast: var(--contrast);
   --color-contrast-foreground: var(--contrast-foreground);
   --color-brand-text: var(--brand-text);
-  --font-sans: "DM Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Bebas Neue", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Burnods", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
-:root {
+:root,
+.dark {
   --radius: 0.75rem;
 
-  /* Contrast colors flip with theme — used for editorial bands */
-  --contrast: oklch(0.985 0.003 95);
-  /* light in light mode */
-  --contrast-foreground: oklch(0.16 0.004 90);
-  /* dark text in light mode */
+  /* Official OKIKE Studio Palette */
+  --surface: #0e0e0e;
+  --ink: #ffffff;
+  --ink-muted: rgba(255, 255, 255, 0.72);
 
-  /* Yellow & Black brand — LIGHT theme (default) */
-  --surface: oklch(0.975 0.004 95);
-  /* off-white background */
-  --ink: oklch(0.16 0.004 90);
-  /* near-black text */
-  --ink-muted: oklch(0.16 0.004 90 / 60%);
-  --brand: oklch(0.90 0.18 107);
-  /* signature lime-yellow #E0EB32 */
-  --brand-foreground: oklch(0.14 0.004 90);
-  /* black on yellow */
-  --brand-text: oklch(0.48 0.15 107);
-  /* high contrast forest gold/lime text in light mode */
+  /* Studio Electric Lime (#E3EE32) & Studio Lilac (#C4B0F0) */
+  --brand: #e3ee32;
+  --brand-foreground: #0e0e0e;
+  --brand-text: #e3ee32;
+  --brand-soft: #c4b0f0;
+
+  --contrast: #171716;
+  --contrast-foreground: #ffffff;
 
   --background: var(--surface);
   --foreground: var(--ink);
-  --card: oklch(0.99 0.002 95);
-  --card-foreground: var(--ink);
-  --popover: oklch(0.99 0.002 95);
-  --popover-foreground: var(--ink);
-  --primary: var(--brand);
-  --primary-foreground: var(--brand-foreground);
-  --secondary: oklch(0.96 0.003 95);
-  --secondary-foreground: var(--ink);
-  --muted: oklch(0.96 0.003 95);
-  --muted-foreground: oklch(0.45 0.005 95);
-  --accent: oklch(0.95 0.05 95);
-  --accent-foreground: oklch(0.25 0.05 95);
+  --card: #151514;
+  --card-foreground: #ffffff;
+  --popover: #151514;
+  --popover-foreground: #ffffff;
+  --primary: #e3ee32;
+  --primary-foreground: #0e0e0e;
+  --secondary: #1d1d1b;
+  --secondary-foreground: #ffffff;
+  --muted: #1d1d1b;
+  --muted-foreground: rgba(255, 255, 255, 0.65);
+  --accent: #262624;
+  --accent-foreground: #ffffff;
   --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.16 0.004 90 / 10%);
-  --input: oklch(0.16 0.004 90 / 15%);
-  --ring: var(--brand);
-}
-
-.dark {
-  --surface: oklch(0.16 0.004 90);
-  --ink: oklch(0.985 0.003 95);
-  --ink-muted: oklch(0.985 0.003 95 / 60%);
-  --brand: oklch(0.90 0.18 107);
-  --brand-foreground: oklch(0.14 0.004 90);
-  --brand-text: oklch(0.90 0.18 107);
-
-  /* Flip contrast colors for dark mode */
-  --contrast: oklch(0.16 0.004 90);
-  /* dark in dark mode */
-  --contrast-foreground: oklch(0.985 0.003 95);
-  /* light text in dark mode */
-
-  --background: var(--surface);
-  --foreground: var(--ink);
-  --card: oklch(0.22 0.004 90);
-  --card-foreground: var(--ink);
-  --popover: var(--surface);
-  --popover-foreground: var(--ink);
-  --primary: var(--brand);
-  --primary-foreground: var(--brand-foreground);
-  --secondary: oklch(0.24 0.004 90);
-  --secondary-foreground: var(--ink);
-  --muted: oklch(0.24 0.004 90);
-  --muted-foreground: oklch(0.72 0.005 95);
-  --accent: oklch(0.3 0.06 95);
-  --accent-foreground: var(--brand);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: var(--brand);
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.12);
+  --input: rgba(255, 255, 255, 0.16);
+  --ring: #e3ee32;
 }
 
 @layer base {
@@ -134,40 +115,61 @@
     background-color: var(--color-surface);
     color: var(--color-ink);
     font-family: var(--font-sans);
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01", "ss03";
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   ::selection {
-    background-color: oklch(0.90 0.18 107 / 40%);
+    background-color: #e3ee32;
+    color: #0e0e0e;
   }
 }
 
-/* Utility: Bebas Neue display font — use class="font-display" */
+/* Utility: Burnods display font — reserved for hero & primary display titles */
 .font-display {
-  font-family: var(--font-display);
+  font-family: "Burnods", "Inter", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.02em;
 }
 
-/* Scroll reveal — global fade + rise as elements enter the viewport.
- * Applied by <ScrollReveal /> to every <main> > section and [data-reveal].
- */
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Lenis smooth scroll (homepage) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Scroll reveal — global fade + rise as elements enter the viewport. */
 .reveal-init {
   opacity: 0;
-  transform: translate3d(0, 56px, 0) scale(0.97);
+  transform: translate3d(0, 32px, 0);
   will-change: opacity, transform;
   transition:
-    opacity 1100ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 1200ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .reveal-in {
   opacity: 1;
-  transform: translate3d(0, 0, 0) scale(1);
+  transform: translate3d(0, 0, 0);
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .reveal-init,
   .reveal-in {
     opacity: 1;
@@ -184,32 +186,56 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: transparent;
+    background: #0e0e0e;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: color-mix(in oklch, var(--color-ink) 30%, transparent);
+    background: #2a2a28;
     border-radius: 999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: color-mix(in oklch, var(--color-ink) 50%, transparent);
+    background: #e3ee32;
   }
 
-  /* Firefox scrollbar */
   * {
     scrollbar-width: thin;
-    scrollbar-color: color-mix(in oklch, var(--color-ink) 30%, transparent) transparent;
+    scrollbar-color: #2a2a28 #0e0e0e;
   }
 }
 
-/* High contrast utility overrides for readable brand-color text */
-.text-brand {
-  color: var(--brand-text) !important;
+/* Infinite marquee animation for Partners and Brands */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
-.hover\:text-brand:hover {
-  color: var(--brand-text) !important;
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 32s linear infinite;
 }
-.group:hover .group-hover\:text-brand {
-  color: var(--brand-text) !important;
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes charIn {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-char-in {
+  opacity: 0;
+  animation: charIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }

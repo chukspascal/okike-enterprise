@@ -140,18 +140,18 @@ function DashboardPage() {
         const [mRes, uRes] = await Promise.all([
           projectIds.length > 0
             ? supabase
-                .from("project_milestones")
-                .select("id, project_id, name, status, position")
-                .in("project_id", projectIds)
-                .order("position")
+              .from("project_milestones")
+              .select("id, project_id, name, status, position")
+              .in("project_id", projectIds)
+              .order("position")
             : Promise.resolve({ data: [] }),
           projectIds.length > 0
             ? supabase
-                .from("project_updates")
-                .select("id, project_id, message, created_at")
-                .in("project_id", projectIds)
-                .order("created_at", { ascending: false })
-                .limit(8)
+              .from("project_updates")
+              .select("id, project_id, message, created_at")
+              .in("project_id", projectIds)
+              .order("created_at", { ascending: false })
+              .limit(8)
             : Promise.resolve({ data: [] }),
         ]);
 
@@ -258,7 +258,7 @@ function DashboardPage() {
 
   function handlePayDeposit(project: Project) {
     if (!user?.email || !project.deposit) return;
-    
+
     const koraKey = import.meta.env.VITE_KORAPAY_PUBLIC_KEY;
     if (!koraKey) {
       toast.error("Payment setup is missing. Please contact support.");
@@ -475,45 +475,45 @@ function DashboardPage() {
                       {updates
                         .filter(u => !deletedUpdates.includes(u.id))
                         .map((up) => {
-                        const proj = projects.find(p => p.id === up.project_id);
-                        const isRead = readUpdates.includes(up.id);
-                        return (
-                          <div key={up.id} className={`text-xs p-2 rounded-xl flex flex-col gap-1 ring-1 text-left relative group ${isRead ? "bg-surface/50 ring-ink/5 opacity-70" : "bg-surface ring-ink/10"}`}>
-                            <div className="flex justify-between items-center pr-10">
-                              <span className="font-semibold text-brand-text truncate max-w-[15ch]">{proj?.title || "Project Update"}</span>
-                              <span className="text-[9px] text-ink/40">{new Date(up.created_at).toLocaleDateString()}</span>
-                            </div>
-                            <p className="text-ink/85 leading-relaxed font-sans pr-10">{up.message}</p>
+                          const proj = projects.find(p => p.id === up.project_id);
+                          const isRead = readUpdates.includes(up.id);
+                          return (
+                            <div key={up.id} className={`text-xs p-2 rounded-xl flex flex-col gap-1 ring-1 text-left relative group ${isRead ? "bg-surface/50 ring-ink/5 opacity-70" : "bg-surface ring-ink/10"}`}>
+                              <div className="flex justify-between items-center pr-10">
+                                <span className="font-semibold text-brand-text truncate max-w-[15ch]">{proj?.title || "Project Update"}</span>
+                                <span className="text-[9px] text-ink/40">{new Date(up.created_at).toLocaleDateString()}</span>
+                              </div>
+                              <p className="text-ink/85 leading-relaxed font-sans pr-10">{up.message}</p>
 
-                            <div className="absolute right-2 top-2 bottom-2 flex flex-col gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity justify-center">
-                              {!isRead && (
+                              <div className="absolute right-2 top-2 bottom-2 flex flex-col gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity justify-center">
+                                {!isRead && (
+                                  <button
+                                    title="Mark as read"
+                                    onClick={() => {
+                                      const next = [...readUpdates, up.id];
+                                      setReadUpdates(next);
+                                      localStorage.setItem("okike_read_updates", JSON.stringify(next));
+                                    }}
+                                    className="p-1 rounded hover:bg-ink/10 text-brand"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                  </button>
+                                )}
                                 <button
-                                  title="Mark as read"
+                                  title="Delete"
                                   onClick={() => {
-                                    const next = [...readUpdates, up.id];
-                                    setReadUpdates(next);
-                                    localStorage.setItem("okike_read_updates", JSON.stringify(next));
+                                    const next = [...deletedUpdates, up.id];
+                                    setDeletedUpdates(next);
+                                    localStorage.setItem("okike_deleted_updates", JSON.stringify(next));
                                   }}
-                                  className="p-1 rounded hover:bg-ink/10 text-brand"
+                                  className="p-1 rounded hover:bg-red-500/10 text-red-500"
                                 >
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
                                 </button>
-                              )}
-                              <button
-                                title="Delete"
-                                onClick={() => {
-                                  const next = [...deletedUpdates, up.id];
-                                  setDeletedUpdates(next);
-                                  localStorage.setItem("okike_deleted_updates", JSON.stringify(next));
-                                }}
-                                className="p-1 rounded hover:bg-red-500/10 text-red-500"
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                              </button>
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
                     </div>
                   )}
                 </div>
@@ -960,7 +960,7 @@ function DailyCodeBite({ bootcampRegs }: { bootcampRegs: any[] }) {
 
   // Pick first registration course or default to Frontend Web
   const userCourse = bootcampRegs?.[0]?.course || "Frontend Web";
-  
+
   // Clean matching track key
   let matchedTrack = "Frontend Web";
   if (userCourse.toLowerCase().includes("security") || userCourse.toLowerCase().includes("cyber")) {
@@ -974,14 +974,14 @@ function DailyCodeBite({ bootcampRegs }: { bootcampRegs: any[] }) {
   }
 
   const trackChallenges = CHALLENGES[matchedTrack] || CHALLENGES["Frontend Web"];
-  
+
   // Use the current day of the year to cycle through the challenges
   const today = new Date();
   const start = new Date(today.getFullYear(), 0, 0);
   const diff = today.getTime() - start.getTime();
   const oneDay = 1000 * 60 * 60 * 24;
   const dayOfYear = Math.floor(diff / oneDay);
-  
+
   const challengeIndex = (dayOfYear + currentQuestionIndex) % trackChallenges.length;
   const challenge = trackChallenges[challengeIndex];
 
@@ -1000,7 +1000,7 @@ function DailyCodeBite({ bootcampRegs }: { bootcampRegs: any[] }) {
         localStorage.setItem("okike_streak", String(nextStreak));
         localStorage.setItem("okike_last_streak_date", todayString);
       }
-      
+
       const nextXp = xp + 15;
       setXp(nextXp);
       localStorage.setItem("okike_xp", String(nextXp));
@@ -1049,11 +1049,10 @@ function DailyCodeBite({ bootcampRegs }: { bootcampRegs: any[] }) {
                   setSelectedOption(idx);
                   setError(false);
                 }}
-                className={`text-left px-4 py-3 rounded-xl text-xs font-medium transition ring-1 cursor-pointer ${
-                  selectedOption === idx
+                className={`text-left px-4 py-3 rounded-xl text-xs font-medium transition ring-1 cursor-pointer ${selectedOption === idx
                     ? "bg-brand/15 ring-brand text-brand"
                     : "bg-surface/50 ring-ink/10 text-ink/75 hover:bg-surface"
-                }`}
+                  }`}
               >
                 {opt}
               </button>
@@ -1082,11 +1081,11 @@ function DailyCodeBite({ bootcampRegs }: { bootcampRegs: any[] }) {
             className="text-[10px] uppercase tracking-wider text-brand hover:bg-brand/10 px-2 py-1.5 rounded-lg font-bold transition cursor-pointer"
           >
             Next Question
-        </button>
-      </div>
-    )}
-  </section>
-);
+          </button>
+        </div>
+      )}
+    </section>
+  );
 }
 
 function DailyTechNews() {
@@ -1268,13 +1267,12 @@ function DashboardOverview({
                     </h2>
                     <p className="text-xs text-ink/50 mt-1">1st August 2026 · Venue TBA</p>
                   </div>
-                  <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider ${
-                    reg.payment_status === "paid"
+                  <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider ${reg.payment_status === "paid"
                       ? "bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/20"
                       : reg.payment_status === "free"
                         ? "bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/20"
                         : "bg-amber-500/10 text-amber-600 ring-1 ring-amber-500/20 animate-pulse"
-                  }`}>
+                    }`}>
                     {reg.payment_status === "paid" ? "Confirmed (Paid)" : reg.payment_status === "free" ? "Confirmed (Free)" : "Payment Pending"}
                   </span>
                 </div>
@@ -1423,7 +1421,7 @@ function DashboardOverview({
       {/* Right rail */}
       <aside className="flex flex-col gap-5">
         <AIInsightsCard projects={projects} milestones={milestones} updates={updates} />
-        
+
         {/* Daily Tech News Feed */}
         <DailyTechNews />
 
@@ -1582,11 +1580,10 @@ function ProjectBuilderWizard({
                 <button
                   key={cat}
                   onClick={() => setCategory(cat)}
-                  className={`py-3 px-4 text-xs font-semibold rounded-xl text-left transition ring-1 cursor-pointer ${
-                    category === cat
+                  className={`py-3 px-4 text-xs font-semibold rounded-xl text-left transition ring-1 cursor-pointer ${category === cat
                       ? "bg-brand/15 ring-brand text-brand"
                       : "bg-surface/50 ring-ink/10 text-ink/75 hover:bg-surface"
-                  }`}
+                    }`}
                 >
                   {cat}
                 </button>
@@ -1605,11 +1602,10 @@ function ProjectBuilderWizard({
                 <button
                   key={p.id}
                   onClick={() => setTier(p.id as any)}
-                  className={`w-full py-3 px-4 text-xs font-semibold rounded-xl text-left transition ring-1 flex justify-between items-center cursor-pointer ${
-                    tier === p.id
+                  className={`w-full py-3 px-4 text-xs font-semibold rounded-xl text-left transition ring-1 flex justify-between items-center cursor-pointer ${tier === p.id
                       ? "bg-brand/15 ring-brand text-brand"
                       : "bg-surface/50 ring-ink/10 text-ink/75 hover:bg-surface"
-                  }`}
+                    }`}
                 >
                   <div className="text-left">
                     <div className="font-semibold">{p.title}</div>
@@ -1643,11 +1639,10 @@ function ProjectBuilderWizard({
                 <button
                   key={a.id}
                   onClick={() => toggleAddon(a.id)}
-                  className={`w-full py-3 px-4 text-xs font-semibold rounded-xl text-left transition ring-1 flex justify-between items-center cursor-pointer ${
-                    addons.includes(a.id)
+                  className={`w-full py-3 px-4 text-xs font-semibold rounded-xl text-left transition ring-1 flex justify-between items-center cursor-pointer ${addons.includes(a.id)
                       ? "bg-brand/15 ring-brand text-brand"
                       : "bg-surface/50 ring-ink/10 text-ink/75 hover:bg-surface"
-                  }`}
+                    }`}
                 >
                   <div className="text-left">
                     <div className="font-semibold">{a.label}</div>
@@ -1669,11 +1664,10 @@ function ProjectBuilderWizard({
                 <button
                   key={u.id}
                   onClick={() => setUrgency(u.id as any)}
-                  className={`py-3 px-4 text-xs font-semibold rounded-xl text-left transition ring-1 cursor-pointer ${
-                    urgency === u.id
+                  className={`py-3 px-4 text-xs font-semibold rounded-xl text-left transition ring-1 cursor-pointer ${urgency === u.id
                       ? "bg-brand/15 ring-brand text-brand"
                       : "bg-surface/50 ring-ink/10 text-ink/75 hover:bg-surface"
-                  }`}
+                    }`}
                 >
                   <div className="font-semibold">{u.label}</div>
                   <div className="text-[9px] text-ink/50 mt-0.5">{u.desc}</div>
@@ -1923,13 +1917,12 @@ function MilestonesView({
                 return (
                   <div key={m.id} className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-1.5 rounded-xl hover:bg-surface/50 transition-all">
                     {/* Stepper Node */}
-                    <div className={`absolute -left-[29px] top-3.5 size-4 rounded-full border-2 transition-all flex items-center justify-center ${
-                      isDone
+                    <div className={`absolute -left-[29px] top-3.5 size-4 rounded-full border-2 transition-all flex items-center justify-center ${isDone
                         ? "bg-emerald-500 border-emerald-500 text-white"
                         : isActive
                           ? "bg-card border-brand ring-4 ring-brand/10"
                           : "bg-card border-ink/20"
-                    }`}>
+                      }`}>
                       {isDone && (
                         <svg className="size-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -1951,13 +1944,12 @@ function MilestonesView({
                     </div>
 
                     <div className="shrink-0 flex items-center">
-                      <span className={`text-[9px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider ${
-                        isDone
+                      <span className={`text-[9px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider ${isDone
                           ? "bg-emerald-500/10 text-emerald-600"
                           : isActive
                             ? "bg-brand/10 text-brand"
                             : "bg-ink/5 text-ink/40"
-                      }`}>
+                        }`}>
                         {m.status === "done" ? "Completed" : m.status === "active" ? "In Progress" : "Queued"}
                       </span>
                     </div>
@@ -2026,7 +2018,7 @@ function AIView({
   async function send(text?: string) {
     const content = (text ?? input).trim();
     if (!content || busy) return;
-    
+
     const userMsg: ChatMsg = { role: "user", content };
     const next = [...messages, userMsg];
     setMessages(next);
@@ -2094,7 +2086,7 @@ function AIView({
                       <div className="text-xs font-bold uppercase text-brand tracking-wider">Project Draft Generated</div>
                       <h4 className="font-semibold">{args.title}</h4>
                       <p className="text-xs text-ink/80">{args.description}</p>
-                      <button 
+                      <button
                         onClick={() => {
                           toast.success("Redirecting to project creator...");
                           navigate({ to: "/book" });
@@ -2111,7 +2103,7 @@ function AIView({
                     <div key={j} className="self-start max-w-[80%] bg-surface border border-ink/10 rounded-xl p-4 space-y-2">
                       <div className="text-xs font-bold uppercase text-brand tracking-wider">Course Registration Drafted</div>
                       <p className="text-xs text-ink/80">I have prepared your bootcamp registration.</p>
-                      <button 
+                      <button
                         onClick={() => {
                           toast.success("Redirecting to registration portal...");
                           navigate({ to: "/bootcamp" });
@@ -2455,7 +2447,7 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const { session } = useAuth();
-  
+
   const [certificateCourse, setCertificateCourse] = useState<string | null>(null);
 
   const [isRegistered, setIsRegistered] = useState(false);
@@ -2489,7 +2481,7 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
       if (!selectedCourse || !session?.user?.email) return;
       const activeModule = selectedCourse.lessons[activeLessonIndex];
       if (!activeModule) return;
-      
+
       setLoadingExtra(true);
       try {
         const [{ data: q }, { data: a }, { data: vc }, { data: cm }] = await Promise.all([
@@ -2596,7 +2588,7 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
             .filter((course) => {
               const title = (course.title || "").toLowerCase().trim();
               const track = (course.track || "").toLowerCase().trim();
-              
+
               return registeredTracks.some(regTrack => {
                 const reg = regTrack.toLowerCase().trim();
                 if (title === reg || track === reg) return true;
@@ -2604,7 +2596,7 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
                 // Fuzzy match overlaps (e.g. Cyber Security -> Cyber Security Fundamentals)
                 if (reg.includes("cyber") && (title.includes("cyber") || track.includes("cyber"))) return true;
                 if (
-                  (reg.includes("frontend") || reg.includes("backend") || reg.includes("web") || reg.includes("stack")) && 
+                  (reg.includes("frontend") || reg.includes("backend") || reg.includes("web") || reg.includes("stack")) &&
                   (title.includes("stack") || title.includes("web") || title.includes("frontend") || title.includes("backend") || track.includes("web"))
                 ) {
                   return true;
@@ -2792,57 +2784,50 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
           <div className="lg:col-span-3 flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 scrollbar-none">
             <button
               onClick={() => setActiveTab("lessons")}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${
-                activeTab === "lessons" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
-              }`}
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${activeTab === "lessons" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
+                }`}
             >
               <BookOpen className="size-4" /> Syllabus Lessons
             </button>
             <button
               onClick={() => setActiveTab("milestones")}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${
-                activeTab === "milestones" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
-              }`}
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${activeTab === "milestones" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
+                }`}
             >
               <Award className="size-4" /> Roadmap Milestones
             </button>
             <button
               onClick={() => setActiveTab("quizzes")}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${
-                activeTab === "quizzes" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
-              }`}
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${activeTab === "quizzes" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
+                }`}
             >
               <HelpCircle className="size-4" /> Track Quizzes
             </button>
             <button
               onClick={() => setActiveTab("assignments")}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${
-                activeTab === "assignments" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
-              }`}
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${activeTab === "assignments" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
+                }`}
             >
               <FileText className="size-4" /> Assignments
             </button>
             <button
               onClick={() => setActiveTab("virtual")}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${
-                activeTab === "virtual" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
-              }`}
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${activeTab === "virtual" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
+                }`}
             >
               <Video className="size-4" /> Live Classes
             </button>
             <button
               onClick={() => setActiveTab("materials")}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${
-                activeTab === "materials" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
-              }`}
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${activeTab === "materials" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
+                }`}
             >
               <Download className="size-4" /> Course Materials
             </button>
             <button
               onClick={() => setActiveTab("sandbox")}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${
-                activeTab === "sandbox" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
-              }`}
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition shrink-0 lg:w-full w-auto whitespace-nowrap text-left ${activeTab === "sandbox" ? "bg-brand text-brand-foreground" : "bg-card hover:bg-ink/5 ring-1 ring-ink/10"
+                }`}
             >
               <Sparkles className="size-4" /> Coding Sandbox
             </button>
@@ -2850,7 +2835,7 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
 
           {/* Main Content Workspace Panel */}
           <div className="lg:col-span-9 bg-card ring-1 ring-ink/10 rounded-2xl p-6 md:p-8 min-h-[50vh]">
-            
+
             {/* TABS: LESSONS WORKSPACE */}
             {activeTab === "lessons" && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -2891,11 +2876,10 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
                           setActiveLessonIndex(idx);
                           setQuizScoreFeedback(null);
                         }}
-                        className={`text-left text-xs px-3 py-2.5 rounded-xl font-medium transition flex items-start justify-between gap-2 border ${
-                          activeLessonIndex === idx
+                        className={`text-left text-xs px-3 py-2.5 rounded-xl font-medium transition flex items-start justify-between gap-2 border ${activeLessonIndex === idx
                             ? "bg-brand/5 border-brand text-brand font-semibold"
                             : "border-transparent bg-surface hover:bg-ink/5 text-ink/80"
-                        }`}
+                          }`}
                       >
                         <span className="truncate">{idx + 1}. {lesson}</span>
                         {isCompleted && <CheckCircle className="size-3.5 text-emerald-500 shrink-0 mt-0.5" />}
@@ -2917,7 +2901,7 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
                     <div>
                       <p className="font-medium text-ink/90 mb-3">Summit Learning Syllabus Material</p>
                       <p className="mb-4">
-                        Welcome to your online class for the Computing Synergy Summit track. This lesson introduces the fundamental concepts of {selectedCourse.title}. 
+                        Welcome to your online class for the Computing Synergy Summit track. This lesson introduces the fundamental concepts of {selectedCourse.title}.
                       </p>
                       <p className="text-xs text-ink/50 italic">
                         Reference guidelines, links to reading repositories, and live video code walkthrough classrooms will be shared here as the Summit commences.
@@ -2927,11 +2911,10 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
                     <div className="mt-6 pt-4 border-t border-ink/5 flex justify-between items-center">
                       <button
                         onClick={() => toggleLessonComplete(activeLesson)}
-                        className={`px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition ${
-                          progress?.lessons_completed?.includes(activeLesson)
+                        className={`px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition ${progress?.lessons_completed?.includes(activeLesson)
                             ? "bg-emerald-500/15 text-emerald-600 hover:opacity-80"
                             : "bg-brand text-brand-foreground hover:opacity-90"
-                        }`}
+                          }`}
                       >
                         {progress?.lessons_completed?.includes(activeLesson) ? "✓ Completed (Undo)" : "Mark as Completed"}
                       </button>
@@ -2966,23 +2949,21 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
                       return (
                         <div key={m.id} className="relative">
                           {/* Dot indicator */}
-                          <div className={`absolute -left-[31px] top-1 size-4 rounded-full ring-4 ring-card flex items-center justify-center ${
-                            status === "completed"
+                          <div className={`absolute -left-[31px] top-1 size-4 rounded-full ring-4 ring-card flex items-center justify-center ${status === "completed"
                               ? "bg-emerald-500"
                               : status === "in_progress"
                                 ? "bg-amber-500 animate-pulse"
                                 : "bg-ink/20"
-                          }`} />
+                            }`} />
                           <div>
                             <div className="font-semibold text-sm flex items-center gap-2">
                               {m.title}
-                              <span className={`text-[9px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider ${
-                                status === "completed"
+                              <span className={`text-[9px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider ${status === "completed"
                                   ? "bg-emerald-500/10 text-emerald-600"
                                   : status === "in_progress"
                                     ? "bg-amber-500/10 text-amber-600"
                                     : "bg-ink/10 text-ink/50"
-                              }`}>
+                                }`}>
                                 {status === "completed" ? "Approved" : status === "in_progress" ? "In Progress" : "Pending"}
                               </span>
                             </div>
@@ -3241,9 +3222,8 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
                     </p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className={`text-xs font-semibold px-2.5 py-1 rounded uppercase tracking-wider ${
-                      (progress as any)?.attendance_mode === "online" ? "bg-emerald-500/10 text-emerald-600" : "bg-blue-500/10 text-blue-600"
-                    }`}>
+                    <span className={`text-xs font-semibold px-2.5 py-1 rounded uppercase tracking-wider ${(progress as any)?.attendance_mode === "online" ? "bg-emerald-500/10 text-emerald-600" : "bg-blue-500/10 text-blue-600"
+                      }`}>
                       {(progress as any)?.attendance_mode === "online" ? "Online Mode" : "Physical Attendance"}
                     </span>
                     <button
@@ -3271,9 +3251,8 @@ function CoursesView({ bootcampRegs, fullName }: { bootcampRegs: any[]; fullName
                           <div>
                             <div className="text-sm font-semibold text-ink flex items-center gap-1.5">
                               {vc.title}
-                              <span className={`text-[8px] font-semibold px-1.5 py-0.5 rounded uppercase ${
-                                vc.session_type === "night" ? "bg-purple-500/10 text-purple-600" : "bg-blue-500/10 text-blue-600"
-                              }`}>
+                              <span className={`text-[8px] font-semibold px-1.5 py-0.5 rounded uppercase ${vc.session_type === "night" ? "bg-purple-500/10 text-purple-600" : "bg-blue-500/10 text-blue-600"
+                                }`}>
                                 {vc.session_type === "night" ? "🌙 Night" : "☀️ General"}
                               </span>
                             </div>
@@ -3630,7 +3609,7 @@ function SettingsView({
   // Security states
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
+
   const [busy, setBusy] = useState(false);
   const [securityBusy, setSecurityBusy] = useState(false);
 
@@ -3715,7 +3694,7 @@ function SettingsView({
     if (error) {
       toast.error(error.message);
     } else {
-      await sendEmailAlert({ data: { email } }).catch(() => {});
+      await sendEmailAlert({ data: { email } }).catch(() => { });
       toast.success("Password changed successfully!");
       setNewPassword("");
       setConfirmPassword("");
@@ -3746,11 +3725,10 @@ function SettingsView({
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key as any)}
-              className={`flex-1 md:flex-none text-left px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all select-none cursor-pointer ${
-                activeTab === tab.key
+              className={`flex-1 md:flex-none text-left px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all select-none cursor-pointer ${activeTab === tab.key
                   ? "bg-brand text-brand-foreground shadow-sm"
                   : "text-ink/65 hover:text-ink hover:bg-ink/5"
-              }`}
+                }`}
             >
               {tab.label}
             </button>
@@ -3992,30 +3970,30 @@ function SettingsView({
                       </div>
                     </label>
                   ))}
-                    
-                    {/* Push Notifications (PWA) Toggle */}
-                    <div className="flex items-center justify-between p-4 rounded-xl border border-ink/10 bg-surface/50">
-                      <div className="flex flex-col gap-1 pr-4">
-                        <span className="font-semibold text-sm text-ink">Background Push Notifications (PWA)</span>
-                        <span className="text-xs text-ink/60">Receive alerts even when the app is closed. Requires browser permission.</span>
-                      </div>
-                      {pushEnabled ? (
-                        <div className="text-xs font-bold text-brand flex items-center gap-1">
-                          <CheckCircle2 className="size-4" /> Enabled
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={handleEnablePush}
-                          className="shrink-0 px-4 py-2 bg-brand/10 text-brand rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-brand/20 transition"
-                        >
-                          Enable
-                        </button>
-                      )}
-                    </div>
-                  </div>
 
-                  <button
+                  {/* Push Notifications (PWA) Toggle */}
+                  <div className="flex items-center justify-between p-4 rounded-xl border border-ink/10 bg-surface/50">
+                    <div className="flex flex-col gap-1 pr-4">
+                      <span className="font-semibold text-sm text-ink">Background Push Notifications (PWA)</span>
+                      <span className="text-xs text-ink/60">Receive alerts even when the app is closed. Requires browser permission.</span>
+                    </div>
+                    {pushEnabled ? (
+                      <div className="text-xs font-bold text-brand flex items-center gap-1">
+                        <CheckCircle2 className="size-4" /> Enabled
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleEnablePush}
+                        className="shrink-0 px-4 py-2 bg-brand/10 text-brand rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-brand/20 transition"
+                      >
+                        Enable
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <button
                   type="submit"
                   disabled={busy}
                   className="w-full bg-brand text-brand-foreground py-3 font-semibold text-xs uppercase tracking-widest hover:opacity-90 disabled:opacity-50 transition rounded-xl cursor-pointer"
@@ -4431,7 +4409,7 @@ function SandboxTab({ courseTitle, lessonTitle }: { courseTitle: string; lessonT
       <p className="text-xs text-ink/65 mt-2 max-w-[42ch] leading-relaxed">
         We have designed a premium fullscreen interactive code editor playground. Write HTML, CSS, and JS side-by-side with your <strong>{lessonTitle}</strong> module.
       </p>
-      
+
       <a
         href={sandboxUrl}
         target="_blank"
@@ -4440,7 +4418,7 @@ function SandboxTab({ courseTitle, lessonTitle }: { courseTitle: string; lessonT
       >
         Launch Fullscreen Editor ❯
       </a>
-      
+
       <span className="text-[10px] text-ink/40 mt-3 font-medium">Opens in a new browser tab</span>
     </div>
   );
@@ -4471,9 +4449,8 @@ function EmailAutomationLogs() {
               </div>
               <p className="text-ink/50 mt-0.5">{log.desc}</p>
             </div>
-            <span className={`px-2 py-0.5 rounded font-bold uppercase tracking-wider ${
-              log.status === "online" ? "bg-emerald-500/10 text-emerald-600" : "bg-blue-500/10 text-blue-600"
-            }`}>
+            <span className={`px-2 py-0.5 rounded font-bold uppercase tracking-wider ${log.status === "online" ? "bg-emerald-500/10 text-emerald-600" : "bg-blue-500/10 text-blue-600"
+              }`}>
               {log.status}
             </span>
           </div>
@@ -4509,7 +4486,7 @@ function SupportChatConsole({
       .select("id, name, email, message, created_at")
       .eq("email", clientEmail)
       .order("created_at", { ascending: true });
-    
+
     if (data && data.length > 0) {
       const formatted = data.map((m) => {
         let sender = "user";
@@ -4541,7 +4518,7 @@ function SupportChatConsole({
 
   useEffect(() => {
     loadMessages();
-    
+
     const channel = supabase
       .channel("support-chat")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "contact_messages", filter: `email=eq.${clientEmail}` }, (payload) => {
@@ -4551,7 +4528,7 @@ function SupportChatConsole({
         if (text.startsWith("[Dashboard Support Ticket]: ")) {
           text = text.replace("[Dashboard Support Ticket]: ", "");
         }
-        
+
         // Prevent adding our own optimistic updates again if they match, though we don't optimistically set ID.
         // For simplicity we just reload all to get consistent IDs or we just append.
         // If it's a support reply, show toast!
@@ -4559,7 +4536,7 @@ function SupportChatConsole({
           toast.info("New message from OKIKE Support", { icon: "💬" });
           setTyping(false);
         }
-        
+
         setMessages((prev) => {
           if (prev.find(x => x.id === m.id)) return prev;
           return [...prev, {
@@ -4572,7 +4549,7 @@ function SupportChatConsole({
         setTimeout(() => endRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
       })
       .subscribe();
-      
+
     return () => {
       supabase.removeChannel(channel);
     };
@@ -4624,11 +4601,10 @@ function SupportChatConsole({
           <div key={m.id} className={`flex ${m.sender === "user" ? "justify-end" : "justify-start"}`}>
             <div className="flex flex-col gap-1 max-w-[80%]">
               <div
-                className={`rounded-2xl px-4 py-2.5 text-xs font-sans leading-relaxed ${
-                  m.sender === "user"
+                className={`rounded-2xl px-4 py-2.5 text-xs font-sans leading-relaxed ${m.sender === "user"
                     ? "bg-brand text-brand-foreground shadow-sm"
                     : "bg-surface ring-1 ring-ink/10 text-ink"
-                }`}
+                  }`}
               >
                 {m.text}
               </div>

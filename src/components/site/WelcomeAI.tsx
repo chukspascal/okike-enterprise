@@ -13,7 +13,7 @@ export function WelcomeAI() {
     {
       role: "assistant",
       content:
-        "Hi there! 👋 Welcome to OKIKE. I'm your AI assistant. I'd love to tell you about what we do. We're a software house and academy — we build great software and teach people to build it too!",
+        "Welcome to OKIKE Enterprises! 👋 We build startups (OKIKE Ventures), grow businesses (OKIKE Studio at studio.okikeenterprises.com), and train engineers (OKIKE Academy). How can I direct you today?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -61,10 +61,10 @@ export function WelcomeAI() {
   }
 
   const quickQuestions = [
-    "What services do you offer?",
-    "Tell me about the academy",
-    "How do I book a project?",
-    "What's your pricing like?",
+    "How does OKIKE help startups & businesses?",
+    "Tell me about OKIKE Studio",
+    "How do I join OKIKE Academy?",
+    "Tell me about the Computing Synergy Summit",
   ];
 
   return (
@@ -80,15 +80,17 @@ export function WelcomeAI() {
 
       {/* Chat window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-3rem)] bg-surface rounded-2xl shadow-2xl ring-1 ring-ink/10 flex flex-col overflow-hidden">
+        <div data-lenis-prevent className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-3rem)] bg-surface rounded-2xl shadow-2xl ring-1 ring-ink/10 flex flex-col overflow-hidden">
           {/* Header */}
           <div className="bg-brand/5 border-b border-ink/10 p-4 flex items-center gap-3">
             <div className="size-10 rounded-full bg-brand/20 flex items-center justify-center">
               <Sparkles className="size-5 text-brand" />
             </div>
             <div>
-              <div className="font-semibold text-ink">OKIKE AI</div>
-              <div className="text-xs text-ink/60">Ask me anything</div>
+              <div className="font-semibold text-ink">OKIKE Ecosystem AI</div>
+              <div className="font-mono text-[10px] uppercase tracking-wider text-ink/60">
+                Startups • Studio • Academy
+              </div>
             </div>
           </div>
 
@@ -100,8 +102,9 @@ export function WelcomeAI() {
                 className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
               >
                 <div
-                  className={`size-8 rounded-full flex items-center justify-center shrink-0 ${msg.role === "user" ? "bg-ink/10" : "bg-brand/20"
-                    }`}
+                  className={`size-8 rounded-full flex items-center justify-center shrink-0 ${
+                    msg.role === "user" ? "bg-ink/10" : "bg-brand/20"
+                  }`}
                 >
                   {msg.role === "user" ? (
                     <User className="size-4 text-ink/70" />
@@ -110,10 +113,11 @@ export function WelcomeAI() {
                   )}
                 </div>
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.role === "user"
-                    ? "bg-brand text-brand-foreground"
-                    : "bg-ink/[0.04] text-ink"
-                    }`}
+                  className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                    msg.role === "user"
+                      ? "bg-brand text-brand-foreground"
+                      : "bg-ink/[0.04] text-ink"
+                  }`}
                 >
                   <p className="text-sm leading-relaxed">{msg.content}</p>
                 </div>
@@ -152,17 +156,19 @@ export function WelcomeAI() {
           <div className="px-4 pb-4 space-y-2">
             <div className="grid grid-cols-2 gap-2">
               <Link
-                to="/signup"
+                to="/enroll"
                 className="text-center text-sm py-2 px-3 rounded-xl bg-brand text-brand-foreground font-medium hover:opacity-90 transition"
               >
-                Sign up
+                Join Academy
               </Link>
-              <Link
-                to="/book"
+              <a
+                href="https://studio.okikeenterprises.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-center text-sm py-2 px-3 rounded-xl bg-ink/[0.05] text-ink font-medium hover:bg-ink/[0.08] transition flex items-center justify-center gap-1"
               >
-                Book project <ArrowUpRight className="size-3" />
-              </Link>
+                OKIKE Studio <ArrowUpRight className="size-3" />
+              </a>
             </div>
           </div>
 
