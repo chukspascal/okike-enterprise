@@ -84,7 +84,7 @@ export function SiteHeader() {
           )}
         </nav>
 
-        {/* Right utility & primary action (Studio Action Button + Light/Dark Toggle) */}
+        {/* Right utility (Theme Toggle + Auth Dropdown / Sign in) */}
         <div className="hidden md:flex items-center gap-4 shrink-0">
           <ThemeToggle />
 
@@ -135,15 +135,6 @@ export function SiteHeader() {
               Sign in
             </Link>
           )}
-
-          <a
-            href="https://studio.okikeenterprises.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs uppercase tracking-[0.14em] font-bold px-4 py-2.5 rounded bg-[#0e0e0e] text-[#e3ee32] hover:bg-black dark:bg-[#e3ee32] dark:text-[#0e0e0e] dark:hover:bg-white transition-colors"
-          >
-            Launch Studio
-          </a>
         </div>
 
         {/* Mobile controls: Theme toggle + menu button */}
@@ -213,22 +204,14 @@ export function SiteHeader() {
                 </button>
               </div>
             ) : (
-              <div className="flex flex-col gap-3 pt-2">
+              <div className="pt-2">
                 <Link
                   to="/login"
                   onClick={() => setOpen(false)}
-                  className="text-xs uppercase tracking-[0.16em] font-medium text-black/70 dark:text-white/70 py-1"
+                  className="text-xs uppercase tracking-[0.16em] font-medium text-black/70 dark:text-white/70 py-1 inline-block"
                 >
                   Sign in
                 </Link>
-                <a
-                  href="https://studio.okikeenterprises.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs uppercase tracking-[0.14em] font-bold text-center py-2.5 rounded bg-[#0e0e0e] text-[#e3ee32] dark:bg-[#e3ee32] dark:text-[#0e0e0e]"
-                >
-                  Launch Studio
-                </a>
               </div>
             )}
           </nav>

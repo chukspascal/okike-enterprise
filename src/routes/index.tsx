@@ -246,9 +246,8 @@ function HomePage() {
           <div className="relative z-10 w-full max-w-[1360px] mx-auto px-6 lg:px-12 pt-16 pb-16 lg:pt-24 lg:pb-20 my-auto">
             {/* Eyebrow Line */}
             <div
-              className={`mb-8 transition-all duration-700 ${
-                mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-              }`}
+              className={`mb-8 transition-all duration-700 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                }`}
             >
               <span className="inline-flex items-center gap-3 text-xs sm:text-sm font-mono uppercase tracking-[0.2em] text-black/60 dark:text-white/60">
                 <span className="w-8 h-px bg-[#0e0e0e] dark:bg-[#E3EE32]" />
@@ -259,9 +258,8 @@ function HomePage() {
             {/* Refined Institutional Headline with Balanced Typography */}
             <div className="mb-10 max-w-4xl">
               <h1
-                className={`font-display text-[clamp(2.5rem,5.5vw,4.8rem)] leading-[0.98] tracking-tight uppercase text-[#0e0e0e] dark:text-white transition-all duration-1000 ${
-                  mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                }`}
+                className={`font-display text-[clamp(2.5rem,5.5vw,4.8rem)] leading-[0.98] tracking-tight uppercase text-[#0e0e0e] dark:text-white transition-all duration-1000 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
               >
                 <span className="block">The institution</span>
                 <span className="block mt-2">
@@ -287,9 +285,8 @@ function HomePage() {
             {/* 2-Column Subheadline + Solid CTAs */}
             <div className="grid lg:grid-cols-12 gap-8 items-end">
               <p
-                className={`lg:col-span-7 text-base lg:text-lg text-black/75 dark:text-white/70 leading-relaxed max-w-xl transition-all duration-700 delay-150 ${
-                  mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                }`}
+                className={`lg:col-span-7 text-base lg:text-lg text-black/75 dark:text-white/70 leading-relaxed max-w-xl transition-all duration-700 delay-150 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                  }`}
               >
                 Three focused branches under one roof—incubating early-stage ventures, engineering
                 production software through{" "}
@@ -312,9 +309,8 @@ function HomePage() {
               </p>
 
               <div
-                className={`lg:col-span-5 flex flex-col sm:flex-row items-start sm:items-center gap-3.5 transition-all duration-700 delay-300 ${
-                  mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                }`}
+                className={`lg:col-span-5 flex flex-col sm:flex-row items-start sm:items-center gap-3.5 transition-all duration-700 delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                  }`}
               >
                 <a
                   href="https://studio.okikeenterprises.com"
@@ -343,21 +339,15 @@ function HomePage() {
                   <div key={dup} className="flex items-center gap-16 shrink-0">
                     {/* Ecosystem Metrics */}
                     <div className="flex items-baseline gap-3.5">
-                      <span className="text-3xl lg:text-4xl font-display text-[#0e0e0e] dark:text-white">2–3 wks</span>
-                      <span className="text-xs text-black/60 dark:text-white/55">
-                        average MVP delivery
-                        <span className="block font-mono text-[10px] text-[#0e0e0e] dark:text-[#E3EE32] uppercase tracking-widest mt-0.5">
-                          01 / OKIKE VENTURES
+                        <span className="text-3xl lg:text-4xl font-display text-[#0e0e0e] dark:text-white">2-3 wks</span>
+                        <span className="text-xs font-semibold uppercase tracking-wider text-black/60 dark:text-white/55">
+                          MVP DELIVERY
                         </span>
-                      </span>
                     </div>
                     <div className="flex items-baseline gap-3.5">
                       <span className="text-3xl lg:text-4xl font-display text-[#0e0e0e] dark:text-white">100+</span>
-                      <span className="text-xs text-black/60 dark:text-white/55">
-                        active portal engineers
-                        <span className="block font-mono text-[10px] text-[#0e0e0e] dark:text-[#E3EE32] uppercase tracking-widest mt-0.5">
-                          03 / OKIKE ACADEMY
-                        </span>
+                      <span className="text-xs text-black/60 dark:text-white/55 font-semibold uppercase tracking-wider text-black/60 dark:text-white/55">
+                        Active Students
                       </span>
                     </div>
                     <div className="flex items-baseline gap-3.5">
