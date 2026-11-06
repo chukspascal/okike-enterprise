@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { WelcomeAI } from "@/components/site/WelcomeAI";
 import { getPartners, type PublicPartner } from "@/lib/public-content";
+import { InteractiveNetworkDeck } from "@/components/site/InteractiveNetworkDeck";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -288,7 +289,7 @@ function HomePage() {
                 className={`lg:col-span-7 text-base lg:text-lg text-black/75 dark:text-white/70 leading-relaxed max-w-xl transition-all duration-700 delay-150 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                   }`}
               >
-                Three focused branches under one roof—incubating early-stage ventures, engineering
+                Three focused branches under one roof incubating early stage ventures, engineering
                 production software through{" "}
                 <a
                   href="https://studio.okikeenterprises.com"
@@ -491,45 +492,8 @@ function HomePage() {
               </div>
             </div>
 
-            {/* Institutional Partner Grid */}
-            <div className="mt-20 pt-14 border-t border-black/10 dark:border-white/10">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                <div>
-                  <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#0e0e0e] dark:text-[#E3EE32]">
-                    Institutional Network
-                  </span>
-                  <h3 className="text-xl font-bold text-[#0e0e0e] dark:text-white mt-1 font-display">
-                    Collaborators, student bodies &amp; client partners.
-                  </h3>
-                </div>
-                <span className="text-xs font-mono text-black/50 dark:text-white/40">
-                  Akwa Ibom · Lagos · Remote
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                {displayPartners.map((p) => (
-                  <a
-                    key={p.id}
-                    href={p.url || "#"}
-                    target={p.url ? "_blank" : undefined}
-                    rel="noopener noreferrer"
-                    className="group flex flex-col items-center justify-center p-6 rounded-xl bg-white dark:bg-[#151514] border border-black/10 dark:border-white/10 hover:border-black dark:hover:border-[#E3EE32] hover:bg-black/[0.02] dark:hover:bg-[#1a1a18] transition-all min-h-[110px] shadow-xs"
-                  >
-                    {p.logo_url ? (
-                      <img
-                        src={p.logo_url}
-                        alt={p.name}
-                        className="h-10 max-w-[120px] w-auto object-contain filter grayscale group-hover:grayscale-0 brightness-100 dark:brightness-150 contrast-125 transition-all mb-2"
-                      />
-                    ) : null}
-                    <span className="text-xs font-mono uppercase tracking-wider text-[#0e0e0e] dark:text-white/75 group-hover:text-black dark:group-hover:text-white text-center">
-                      {p.name}
-                    </span>
-                  </a>
-                ))}
-              </div>
-            </div>
+            {/* Institutional Partner Expanding Deck */}
+            <InteractiveNetworkDeck partners={displayPartners} />
           </div>
         </section>
       </SiteLayout>
