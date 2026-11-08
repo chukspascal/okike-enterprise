@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Bot, Send, X, Sparkles, ArrowUpRight, User, Loader2 } from "lucide-react";
+import { Send, X, ArrowUpRight, User, Loader2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { askPublicAI } from "@/lib/public-ai.functions";
+import okikeLogo from "@/assets/okike-logo.png";
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
 
@@ -13,7 +14,7 @@ export function WelcomeAI() {
     {
       role: "assistant",
       content:
-        "Welcome to OKIKE Enterprises! 👋 We build startups (OKIKE Ventures), grow businesses (OKIKE Studio at studio.okikeenterprises.com), and train engineers (OKIKE Academy). How can I direct you today?",
+        "Welcome to OKIKE Enterprises! 👋 I'm Coach Ziri, your OKIKE Ecosystem AI. We build startups (OKIKE Ventures & AI Labs), grow businesses (OKIKE Studio), and train engineers (OKIKE Academy). How can I direct you today?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -62,36 +63,61 @@ export function WelcomeAI() {
 
   const quickQuestions = [
     "How does OKIKE help startups & businesses?",
-    "Tell me about OKIKE Studio",
+    "Tell me about OKIKE Studio & Coach Ziri",
     "How do I join OKIKE Academy?",
     "Tell me about the Computing Synergy Summit",
   ];
 
   return (
     <>
-      {/* Floating button */}
+      {/* Floating button with OKIKE Logo */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 bg-brand text-brand-foreground p-4 rounded-full shadow-xl hover:scale-105 transition-transform"
-        aria-label="Chat with OKIKE AI"
+        className="fixed bottom-6 right-6 z-50 bg-[#0E0E0E] dark:bg-[#E3EE32] text-[#E3EE32] dark:text-[#0E0E0E] p-3.5 rounded-full shadow-2xl border border-black/15 dark:border-white/20 hover:scale-105 transition-transform flex items-center justify-center"
+        aria-label="Chat with Coach Ziri · OKIKE AI"
+        title="Chat with Coach Ziri · OKIKE AI"
       >
-        {isOpen ? <X className="size-6" /> : <Bot className="size-6" />}
+        {isOpen ? (
+          <X className="size-6" />
+        ) : (
+          <img
+            src={okikeLogo}
+            alt="OKIKE AI"
+            className="size-7 object-contain invert dark:invert-0"
+          />
+        )}
       </button>
 
       {/* Chat window */}
       {isOpen && (
         <div data-lenis-prevent className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-3rem)] bg-surface rounded-2xl shadow-2xl ring-1 ring-ink/10 flex flex-col overflow-hidden">
           {/* Header */}
-          <div className="bg-brand/5 border-b border-ink/10 p-4 flex items-center gap-3">
-            <div className="size-10 rounded-full bg-brand/20 flex items-center justify-center">
-              <Sparkles className="size-5 text-brand" />
-            </div>
-            <div>
-              <div className="font-semibold text-ink">OKIKE Ecosystem AI</div>
-              <div className="font-mono text-[10px] uppercase tracking-wider text-ink/60">
-                Startups • Studio • Academy
+          <div className="bg-brand/5 border-b border-ink/10 p-4 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-full bg-[#0E0E0E] dark:bg-[#E3EE32] flex items-center justify-center p-2 shrink-0">
+                <img
+                  src={okikeLogo}
+                  alt="OKIKE"
+                  className="w-full h-full object-contain invert dark:invert-0"
+                />
+              </div>
+              <div>
+                <div className="font-semibold text-ink text-sm">Coach Ziri · OKIKE AI</div>
+                <div className="font-mono text-[10px] uppercase tracking-wider text-ink/60">
+                  Startups • Studio • Academy
+                </div>
               </div>
             </div>
+            <a
+              href="https://coach-ziri.okikeenterprises.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-1 rounded-full bg-ink/[0.06] hover:bg-ink/[0.12] text-ink flex items-center gap-1 transition"
+              title="Open Coach Ziri Command Center"
+            >
+              <span>Ziri App</span>
+              <ArrowUpRight className="size-3" />
+            </a>
           </div>
 
           {/* Messages */}
@@ -103,13 +129,19 @@ export function WelcomeAI() {
               >
                 <div
                   className={`size-8 rounded-full flex items-center justify-center shrink-0 ${
-                    msg.role === "user" ? "bg-ink/10" : "bg-brand/20"
+                    msg.role === "user"
+                      ? "bg-ink/10"
+                      : "bg-[#0E0E0E] dark:bg-[#E3EE32] p-1.5"
                   }`}
                 >
                   {msg.role === "user" ? (
                     <User className="size-4 text-ink/70" />
                   ) : (
-                    <Bot className="size-4 text-brand" />
+                    <img
+                      src={okikeLogo}
+                      alt="OKIKE"
+                      className="w-full h-full object-contain invert dark:invert-0"
+                    />
                   )}
                 </div>
                 <div
@@ -125,8 +157,12 @@ export function WelcomeAI() {
             ))}
             {busy && (
               <div className="flex gap-3">
-                <div className="size-8 rounded-full bg-brand/20 flex items-center justify-center shrink-0">
-                  <Bot className="size-4 text-brand" />
+                <div className="size-8 rounded-full bg-[#0E0E0E] dark:bg-[#E3EE32] p-1.5 flex items-center justify-center shrink-0">
+                  <img
+                    src={okikeLogo}
+                    alt="OKIKE"
+                    className="w-full h-full object-contain invert dark:invert-0"
+                  />
                 </div>
                 <div className="bg-ink/[0.04] rounded-2xl px-4 py-3 flex items-center gap-2">
                   <Loader2 className="size-4 animate-spin text-ink/60" />

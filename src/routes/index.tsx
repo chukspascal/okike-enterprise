@@ -115,7 +115,7 @@ const FALLBACK_PARTNERS: PublicPartner[] = [
   { id: "p-2", name: "KRAIT", logo_url: null, url: "https://usekrait.com" },
   { id: "p-3", name: "DATADOM", logo_url: null, url: "https://datadom.vercel.app/" },
   { id: "p-4", name: "MANSFILL ICT", logo_url: null, url: "https://www.mansfillictservices.com/" },
-  { id: "p-5", name: "COACH ZIRI", logo_url: null, url: "https://coach-ziri.vercel.app/" },
+  { id: "p-5", name: "COACH ZIRI", logo_url: null, url: "https://coach-ziri.okikeenterprises.com/" },
 ];
 
 function AsciiSphereCanvas() {
