@@ -3,7 +3,7 @@ import { Send, X, ArrowUpRight, User, Loader2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { askPublicAI } from "@/lib/public-ai.functions";
-import okikeLogo from "@/assets/okike-logo.png";
+import okikeSymbol from "@/assets/okike-symbol.png";
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
 
@@ -81,7 +81,7 @@ export function WelcomeAI() {
           <X className="size-6" />
         ) : (
           <img
-            src={okikeLogo}
+            src={okikeSymbol}
             alt="OKIKE AI"
             className="size-7 object-contain invert dark:invert-0"
           />
@@ -96,9 +96,9 @@ export function WelcomeAI() {
             <div className="flex items-center gap-3">
               <div className="size-10 rounded-full bg-[#0E0E0E] dark:bg-[#E3EE32] flex items-center justify-center p-2 shrink-0">
                 <img
-                  src={okikeLogo}
+                  src={okikeSymbol}
                   alt="OKIKE"
-                  className="w-full h-full object-contain invert dark:invert-0"
+                  className="size-full object-contain invert dark:invert-0"
                 />
               </div>
               <div>
@@ -138,9 +138,9 @@ export function WelcomeAI() {
                     <User className="size-4 text-ink/70" />
                   ) : (
                     <img
-                      src={okikeLogo}
+                      src={okikeSymbol}
                       alt="OKIKE"
-                      className="w-full h-full object-contain invert dark:invert-0"
+                      className="size-full object-contain invert dark:invert-0"
                     />
                   )}
                 </div>
@@ -159,9 +159,9 @@ export function WelcomeAI() {
               <div className="flex gap-3">
                 <div className="size-8 rounded-full bg-[#0E0E0E] dark:bg-[#E3EE32] p-1.5 flex items-center justify-center shrink-0">
                   <img
-                    src={okikeLogo}
+                    src={okikeSymbol}
                     alt="OKIKE"
-                    className="w-full h-full object-contain invert dark:invert-0"
+                    className="size-full object-contain invert dark:invert-0 animate-pulse"
                   />
                 </div>
                 <div className="bg-ink/[0.04] rounded-2xl px-4 py-3 flex items-center gap-2">
